@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mediquick Chat</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      width: 100%;
+      height: 100vh;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Chat Header */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .profile-pic {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .doctor-info h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .doctor-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #e0e0e0;
+    }
+
+    /* Chat History */
+    .chat-history {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      max-width: 70%;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .message.received {
+      background-color: #e0e0e0;
+      align-self: flex-start;
+    }
+
+    .message.sent {
+      background-color: #007bff;
+      color: #fff;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+
+    /* Chat Input */
+    .chat-input {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #fff;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      margin-right: 10px;
+    }
+
+    .chat-input button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      background-color: #0056b3;
+    }
+
+    .file-upload-label {
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .file-upload-label input {
+      display: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- Chat Container -->
+  <div class="chat-container">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <img src="doctor-profile.jpg" alt="Doctor Profile" class="profile-pic">
+      <div class="doctor-info">
+        <h2>Dr. John Doe</h2>
+        <p>Online</p>
+      </div>
+    </div>
+
+    <!-- Chat History -->
+    <div class="chat-history" id="chat-history">
+      <!-- Example Messages -->
+      <div class="message received">
+        <p>Hello! How can I assist you today?</p>
+      </div>
+      <div class="message sent">
+        <p>Hi Doctor, I need help with my prescription.</p>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input">
+      <input type="text" id="message-input" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+      <label for="file-upload" class="file-upload-label">
+        <span><img
+            src="data:image/png;base64,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"
+            height="20px" width="16px"></span>
+        <input type="file" id="file-upload" accept="image/*, .pdf, .doc" onchange="handleFileUpload(event)">
+      </label>
+    </div>
+  </div>
+
+  <script>
+    // Function to send a message
+    function sendMessage() {
+      const input = document.getElementById("message-input");
+      const message = input.value.trim();
+
+      if (message) {
+        const chatHistory = document.getElementById("chat-history");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", "sent");
+        messageElement.innerHTML = `<p>${message}</p>`;
+        chatHistory.appendChild(messageElement);
+
+        // Clear input
+        input.value = "";
+
+        // Scroll to bottom
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+    }
+
+    // Function to handle file upload
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const chatHistory = document.getElementById("chat-history");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", "sent");
+
+        if (file.type.startsWith("image/")) {
+          // Display image
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            messageElement.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image" style="max-width: 100%; border-radius: 10px;">`;
+            chatHistory.appendChild(messageElement);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // Display file name
+          messageElement.innerHTML = `<p>File: ${file.name}</p>`;
+          chatHistory.appendChild(messageElement);
+        }
+
+        // Scroll to bottom
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+    }
+
+    // Allow pressing Enter to send a message
+    document.getElementById("message-input").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+
+</html>
