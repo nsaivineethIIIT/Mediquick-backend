@@ -1,0 +1,57 @@
+.footer-sidebar {
+    background: #444d53;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2rem 0;
+    margin-left: 25rem; /* Match sidebar width */
+    width: calc(100% - 25rem);
+    box-sizing: border-box;
+}
+
+.footer-sidebar .box {
+    width: 30rem;
+    margin: 2rem;
+    text-align: center;
+}
+
+.footer-sidebar .box .logo {
+    padding: 2rem 0;
+    font-size: 3rem;
+    color: #fff;
+}
+
+.footer-sidebar .box .logo span {
+    color: #0188df;
+}
+
+.footer-sidebar .box p {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.footer-sidebar .box a {
+    color: #fff;
+    font-size: 2rem;
+    display: block;
+    padding: .2rem 0;
+}
+
+.footer-sidebar .box a:hover {
+    text-decoration: underline;
+}
+
+.footer-sidebar .credit {
+    width: 85%;
+    padding-top: 1rem;
+    font-size: 2rem;
+    color: #fff;
+    text-align: center;
+    border-top: .2rem solid #fff;
+}
+
+.footer-sidebar .credit span {
+    color: #0188df;
+    text-decoration: underline;
+    letter-spacing: .5rem;
+}

@@ -1,0 +1,301 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --blue: #0188df;
+    --black: #444d53;
+    --white: #fff;
+}
+
+* {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    outline: none;
+    box-sizing: border-box;
+    transition: all linear .2s;
+}
+
+html {
+    font-size: 62.5%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.employee-form-container {
+    min-height: 100vh;
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.employee-profile {
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    background: white;
+    border-radius: 15px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 2.2rem;
+    cursor: pointer;
+    color: var(--black);
+    z-index: 10;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--blue);
+}
+
+.profile-form {
+    color: #222;
+    font-size: 1.45rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+    padding: 0.2rem 0.8rem;
+    border-radius: 4px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.employee-form-container .navbar ul li a:hover {
+    color: #0188df;
+    background: #e6f2fb;
+}
+
+.employee-form-container .fas.fa-bars {
+    display: none;
+}
+
+.employee-profile-form {
+    background: var(--white);
+    border-radius: 1rem;
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1);
+    max-width: 500px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 3rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+    color: var(--blue);
+    text-align: center;
+    font-weight: 700;
+}
+
+.employee-profile h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2.8rem;
+    color: #667eea;
+    text-align: center;
+    font-weight: 700;
+}
+
+.employee-form-container .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 400px;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="email"],
+.profile-form input[type="password"],
+.profile-form input[type="tel"],
+.profile-form input[type="file"] {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    margin: 0.5rem 0;
+    border: .15rem solid #e0e0e0;
+    border-radius: .8rem;
+    font-size: 1.5rem;
+    background: #f9f9f9;
+    color: var(--black);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.profile-form input[type="file"] {
+    padding: 1rem;
+    background: var(--white);
+}
+
+.profile-form input:focus {
+    border: .15rem solid var(--blue);
+    outline: none;
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(1, 136, 223, 0.1);
+}
+
+.profile-form .error-input {
+    border-color: #ff5252 !important;
+    background: #fff6f6;
+}
+
+.employee-form-container .profile-form .field-error {
+    color: #ff5252;
+    font-size: 0.95rem;
+    margin-top: -0.7rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.2rem;
+    display: block;
+}
+
+.profile-form .button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    padding: 1.2rem 0;
+    border: none;
+    border-radius: .8rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 1.5rem 0 1rem 0;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.profile-form .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.profile-form .toggle {
+    color: var(--blue);
+    font-size: 1.6rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    text-align: center;
+}
+
+.profile-form .toggle:hover {
+    color: var(--black);
+    text-decoration: underline;
+}
+
+.employee-form-container .profile-form .toggle ins {
+    color: #ffb300;
+    text-decoration: underline;
+    margin-left: 0.2rem;
+}
+
+.error-message,
+#errlogin {
+    color: #721c24;
+    background: #f8d7da;
+    border: .15rem solid #f5c6cb;
+    padding: 1rem 1.5rem;
+    border-radius: .8rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.success-message,
+#successlogin {
+    background: #d4edda;
+    color: #155724;
+    border: .15rem solid #c3e6cb;
+    padding: 1rem 1.5rem;
+    border-radius: .8rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.employee-form-container label[for="profilePhoto"] {
+    color: #0188df;
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.employee-form-container #photoPreview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.employee-form-container #previewImg {
+    width: 100px;
+    height: 130px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #0188df;
+}
+
+@media (max-width: 600px) {
+    .employee-form-container .employee-profile-form {
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    }
+    
+    .employee-profile {
+        padding: 2rem 1.5rem;
+        width: 95%;
+    }
+    
+    .employee-profile h2 {
+        font-size: 2.2rem;
+    }
+
+    .employee-form-container header {
+        flex-direction: column;
+        gap: 0.7rem;
+        padding: 0.7rem 0;
+    }
+
+    .employee-form-container .logo {
+        margin-left: 0;
+        font-size: 1.5rem;
+    }
+}
+
+#signupForm.employee-profile-form {
+    margin-top: 30px;
+    max-width: 620px;
+}

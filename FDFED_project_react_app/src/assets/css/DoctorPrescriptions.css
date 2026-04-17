@@ -1,0 +1,336 @@
+.prescriptions-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .prescription-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .prescription-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .prescription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .patient-info {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .patient-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .patient-email {
+            color: #3498db;
+            font-size: 1em;
+            font-weight: 600;
+        }
+        
+        .prescription-date {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            text-align: right;
+        }
+        
+        .date-time {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .download-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .patient-details {
+            background: linear-gradient(135deg, #ebf5fb, #d6eaf8);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .patient-details strong {
+            color: #2c3e50;
+        }
+        
+        .patient-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .patient-detail-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .patient-detail-label {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .patient-detail-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .medicines-section {
+            margin-top: 20px;
+        }
+        
+        .medicines-section h4 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .medicine-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+            transition: background-color 0.3s ease;
+        }
+        
+        .medicine-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .medicine-item:last-child {
+            border-bottom: none;
+        }
+        
+        .medicine-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .medicine-details {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        .dosage {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .instructions strong {
+            color: #e67e22;
+        }
+        
+        .diagnosis {
+            background: linear-gradient(135deg, #d6eaf8, #aed6f1);
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .diagnosis strong {
+            color: #2980b9;
+        }
+        
+        .no-prescriptions {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .no-prescriptions i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #bdc3c7;
+        }
+        
+        .no-prescriptions h3 {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .prescription-id {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+            font-size: 0.8em;
+            color: #7f8c8d;
+            text-align: center;
+        }
+        
+        .medicine-detail-item {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        
+        .medicine-detail-item strong {
+            color: #3498db;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .edit-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .edit-btn:hover {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #e74c3c;
+            background: #fadbd8;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .retry-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .prescription-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .prescription-date {
+                text-align: left;
+            }
+            
+            .download-btn, .edit-btn {
+                align-self: stretch;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            .medicine-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .patient-details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }

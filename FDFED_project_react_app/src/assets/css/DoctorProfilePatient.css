@@ -1,0 +1,646 @@
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --blue: #0188df;
+    --black: #444d53;
+    --white: #fff;
+}
+
+* {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    outline: none;
+    box-sizing: border-box;
+    transition: all linear .2s;
+}
+
+html {
+    font-size: 62.5%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.button {
+    height: 3.5rem;
+    width: 15rem;
+    background: var(--black);
+    color: var(--white);
+    font-size: 1.7rem;
+    /* text-transform: capitalize; */
+    border-radius: .5rem;
+    cursor: pointer;
+    margin: 1rem 0;
+    border: .1rem solid var(--blue);
+}
+
+.button:hover {
+    border: .1rem solid var(--blue);
+    background: var(--white);
+    color: var(--blue);
+    letter-spacing: .2rem;
+}
+
+.heading {
+    text-align: center;
+    font-size: 4rem;
+    padding: 1rem;
+    padding-top: 1rem;
+    color: var(--blue);
+    letter-spacing: .1rem;
+}
+
+.title {
+    text-align: center;
+    padding: 0rem 1rem;
+    font-size: 2.5rem;
+    color: var(--black);
+    font-weight: 300;
+}
+
+header {
+    width: 96%;
+    background: var(--white);
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translate(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    z-index: 1000;
+}
+
+header a {
+    color: var(--black);
+}
+
+header a:hover {
+    color: var(--blue);
+}
+
+header .logo {
+    font-size: 3rem;
+}
+
+header .logo span {
+    color: var(--blue);
+}
+
+header .navbar ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+}
+
+header .navbar ul li {
+    margin: 0 1rem;
+}
+
+header .navbar ul li a {
+    font-size: 2rem;
+    color: var(--black);
+}
+
+header .navbar ul li a:hover {
+    color: var(--blue);
+}
+
+header .fa-bars {
+    font-size: 3rem;
+    color: var(--blue);
+    cursor: pointer;
+    display: none;
+}
+
+header .fa-times {
+    transform: rotate(180deg);
+}
+
+.header-active {
+    top: 0;
+    width: 100%;
+    box-shadow: .1rem .3rem rgba(0, 0, 0, .3);
+}
+
+.footer {
+    background: var(--black);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2rem 0;
+}
+
+.footer .box {
+    width: 30rem;
+    margin: 2rem;
+    text-align: center;
+}
+
+.footer .box:first-child {
+    text-align: left;
+}
+
+.footer .box .logo {
+    padding: 2rem 0;
+    font-size: 3rem;
+    color: var(--white);
+}
+
+.footer .box .logo:hover {
+    color: var(--blue);
+}
+
+.footer .box .logo span {
+    color: var(--blue);
+}
+
+.footer .box p {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.footer .box a {
+    color: var(--white);
+    font-size: 2rem;
+    display: block;
+    padding: .2rem 0;
+}
+
+.footer .box a:hover {
+    text-decoration: underline;
+}
+
+.footer .credit {
+    width: 85%;
+    padding-top: 1rem;
+    font-size: 2rem;
+    color: var(--white);
+    text-align: center;
+    border-top: .2rem solid var(--white);
+}
+
+.footer .credit span {
+    color: var(--blue);
+    text-decoration: underline;
+    letter-spacing: .5rem;
+}
+
+.close-btn {
+    position: absolute;
+    top: 12.5%;
+    left: 2%;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: 5px 10px;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin-top: 80px;
+}
+
+.left-section {
+    width: 80%;
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    font-size: 1.5rem;
+    position: relative;
+}
+
+.right-section {
+    width: 80%;
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    font-size: 1.5rem;
+}
+
+.doctor-info {
+    display: flex;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.doctor-info img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover;
+}
+
+.doctor-details {
+    margin-bottom: 20px;
+}
+
+.reviews {
+    margin-bottom: 20px;
+}
+
+.review {
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.appointment-slots {
+    margin-bottom: 20px;
+}
+
+.date-selection {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    white-space: nowrap;
+}
+
+.date-selection button {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.date-selection button.selected {
+    background: var(--blue);
+    color: white;
+}
+
+.slots {
+    margin-bottom: 20px;
+}
+
+.slots h3 {
+    margin-bottom: 10px;
+}
+
+.slots button {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.slots button.selected {
+    background: var(--blue);
+    color: white;
+}
+
+.book-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--black);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.book-btn:hover {
+    background: var(--blue);
+}
+
+/* Payment Modal Styles */
+.payment-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.payment-modal {
+    background: var(--white);
+    border-radius: 1.5rem;
+    width: 90%;
+    max-width: 55rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(5rem);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2.5rem;
+    border-bottom: 0.2rem solid #f0f0f0;
+    background: linear-gradient(135deg, var(--blue) 0%, #0166b3 100%);
+    border-radius: 1.5rem 1.5rem 0 0;
+}
+
+.payment-header h2 {
+    font-size: 2.5rem;
+    color: var(--white);
+    margin: 0;
+}
+
+.close-modal {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: var(--white);
+    font-size: 2.5rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.payment-details {
+    padding: 2.5rem;
+}
+
+.appointment-summary {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2.5rem;
+    border-left: 0.4rem solid var(--blue);
+}
+
+.appointment-summary h3 {
+    font-size: 2rem;
+    color: var(--black);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.appointment-summary h3::before {
+    content: "📋";
+    margin-right: 1rem;
+    font-size: 2.2rem;
+}
+
+.appointment-summary p {
+    font-size: 1.6rem;
+    color: var(--black);
+    margin: 1rem 0;
+    padding-left: 0.5rem;
+}
+
+.appointment-summary .total-amount {
+    font-size: 2rem;
+    color: var(--blue);
+    font-weight: bold;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 0.2rem dashed #ddd;
+}
+
+.payment-methods h3 {
+    font-size: 2rem;
+    color: var(--black);
+    margin-bottom: 2rem;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border: 0.2rem solid #e0e0e0;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--white);
+}
+
+.payment-option:hover {
+    border-color: var(--blue);
+    background: #f0f8ff;
+    transform: translateY(-0.2rem);
+    box-shadow: 0 0.5rem 1.5rem rgba(1, 136, 223, 0.2);
+}
+
+.payment-option.selected {
+    border-color: var(--blue);
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+    box-shadow: 0 0.5rem 1.5rem rgba(1, 136, 223, 0.3);
+}
+
+.payment-option input[type="radio"] {
+    margin-right: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    accent-color: var(--blue);
+}
+
+.payment-option .payment-icon {
+    font-size: 2.5rem;
+    margin-right: 1rem;
+}
+
+.payment-option span:last-child {
+    font-size: 1.6rem;
+    color: var(--black);
+    font-weight: 500;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    border-top: 0.2rem solid #f0f0f0;
+}
+
+.cancel-payment-btn,
+.confirm-payment-btn {
+    padding: 1.2rem 3rem;
+    font-size: 1.6rem;
+    border: none;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cancel-payment-btn {
+    background: #f5f5f5;
+    color: var(--black);
+    border: 0.2rem solid #ddd;
+}
+
+.cancel-payment-btn:hover:not(:disabled) {
+    background: #e0e0e0;
+    border-color: #bbb;
+}
+
+.confirm-payment-btn {
+    background: linear-gradient(135deg, var(--blue) 0%, #0166b3 100%);
+    color: var(--white);
+    box-shadow: 0 0.4rem 1rem rgba(1, 136, 223, 0.3);
+}
+
+.confirm-payment-btn:hover:not(:disabled) {
+    transform: translateY(-0.2rem);
+    box-shadow: 0 0.6rem 1.5rem rgba(1, 136, 223, 0.4);
+}
+
+.confirm-payment-btn:disabled,
+.cancel-payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width:768px) {
+    html {
+        font-size: 55%;
+    }
+
+    header .fa-bars {
+        display: block;
+    }
+
+    header .navbar {
+        position: fixed;
+        top: -100rem;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        opacity: 0;
+    }
+
+    header .navbar ul {
+        flex-flow: column;
+        padding: 2rem 0;
+    }
+
+    header .navbar ul li {
+        margin: 1rem 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    header .navbar ul li a {
+        font-size: 2rem;
+        display: block;
+    }
+
+    header .nav-toggle {
+        top: 5.5rem;
+        opacity: 1;
+    }
+
+    .left-section,
+    .right-section {
+        width: 95%;
+        margin: 10px auto;
+        padding: 10px;
+    }
+
+    .doctor-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .doctor-info img {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .date-selection {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .date-selection button {
+        margin: 5px;
+    }
+
+    .slots button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .payment-modal {
+        width: 95%;
+        max-width: 95%;
+    }
+
+    .payment-details {
+        padding: 1.5rem;
+    }
+
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-actions {
+        flex-direction: column;
+    }
+
+    .cancel-payment-btn,
+    .confirm-payment-btn {
+        width: 100%;
+    }
+}

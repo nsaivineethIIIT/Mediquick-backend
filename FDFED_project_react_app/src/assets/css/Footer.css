@@ -1,0 +1,150 @@
+.mq-footer {
+  background: linear-gradient(180deg, #0f172a 0%, #0b1224 100%);
+  color: #cbd5e1;
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.mq-footer__inner {
+  width: min(1200px, 94%);
+  margin: 0 auto;
+  padding: 3rem 0 2.25rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.mq-footer__column {
+  min-width: 0;
+}
+
+.mq-footer__brand {
+  margin: 0;
+  font-size: 2.4rem;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.mq-footer__brand span {
+  color: #38bdf8;
+}
+
+body.medicine-flow-theme .mq-footer__brand,
+body.medicine-flow-theme .mq-footer__brand span {
+  color: #ffffff;
+}
+
+.mq-footer__intro {
+  margin: 1rem auto 0;
+  color: #cbd5e1;
+  line-height: 1.7;
+  font-size: 1.05rem;
+  max-width: 46ch;
+}
+
+.mq-footer__title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.mq-footer__links {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.mq-footer__link {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 1.06rem;
+  line-height: 1.5;
+  transition: color 0.2s ease, transform 0.2s ease;
+  transform-origin: center;
+}
+
+.mq-footer__link:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.mq-footer__bottom {
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.mq-footer__copyright {
+  width: min(1200px, 94%);
+  margin: 0 auto;
+  padding: 1rem 0 1.25rem;
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+.mq-footer__copyright span {
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+body.patient-profile-zoom .mq-footer {
+  margin-top: 3.5rem;
+}
+
+body.patient-profile-zoom .mq-footer__inner {
+  width: min(1260px, 96%);
+  padding: 3.4rem 0 2.5rem;
+}
+
+body.patient-profile-zoom .mq-footer__brand {
+  font-size: 2.9rem;
+}
+
+body.patient-profile-zoom .mq-footer__intro {
+  font-size: 1.2rem;
+  line-height: 1.8;
+}
+
+body.patient-profile-zoom .mq-footer__title {
+  font-size: 1.6rem;
+}
+
+body.patient-profile-zoom .mq-footer__link {
+  font-size: 1.2rem;
+}
+
+body.patient-profile-zoom .mq-footer__copyright {
+  padding: 1.2rem 0 1.4rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 960px) {
+  .mq-footer__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .mq-footer {
+    margin-top: 2rem;
+  }
+
+  .mq-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 2.25rem 0 1.6rem;
+  }
+
+  .mq-footer__brand {
+    font-size: 2rem;
+  }
+
+  .mq-footer__intro,
+  .mq-footer__link,
+  .mq-footer__copyright {
+    font-size: 1rem;
+  }
+}

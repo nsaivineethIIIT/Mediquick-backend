@@ -1,0 +1,53 @@
+{
+  "name": "fsd-project-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch --runInBand",
+    "test:coverage": "jest --coverage --runInBand --forceExit",
+    "test:auth": "jest tests/auth.test.js --runInBand --forceExit",
+    "test:appointment": "jest tests/appointment.test.js --runInBand --forceExit",
+    "test:medicine": "jest tests/medicine.test.js --runInBand --forceExit",
+    "test:admin": "jest tests/admin.test.js --runInBand --forceExit",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^11.9.0",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "csurf": "^1.2.2",
+    "dotenv": "^17.3.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.18.0",
+    "morgan": "^1.10.1",
+    "multer": "^1.4.5-lts.2",
+    "nodemailer": "^8.0.1",
+    "nodemon": "^3.1.14",
+    "path": "^0.12.7",
+    "pdfkit": "^0.17.2",
+    "redis": "^4.7.1",
+    "rotating-file-stream": "^3.2.8",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
+    "mongodb-memory-server": "^9.1.6",
+    "supertest": "^6.3.3"
+  },
+  "description": ""
+}

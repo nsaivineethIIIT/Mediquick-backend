@@ -1,0 +1,199 @@
+body.medicine-flow-theme {
+  background: #f7f9fb;
+  color: #191c1e;
+}
+
+body.medicine-flow-theme .patient-cart-page,
+body.medicine-flow-theme .patient-orders-page,
+body.medicine-flow-theme .medicine-detail-container,
+body.medicine-flow-theme .order-success-container,
+body.medicine-flow-theme .payment-container,
+body.medicine-flow-theme .order-container,
+body.medicine-flow-theme .checkout-container {
+  background: radial-gradient(ellipse at top right, rgba(219, 234, 254, 0.55), #f7f9fb 45%, #f7f9fb 100%);
+  color: #191c1e;
+}
+
+body.medicine-flow-theme .cart-container,
+body.medicine-flow-theme .orders-container,
+body.medicine-flow-theme .checkout-container,
+body.medicine-flow-theme .payment-container,
+body.medicine-flow-theme .order-container,
+body.medicine-flow-theme .order-success-container,
+body.medicine-flow-theme .medicine-detail-container {
+  width: min(100%, 84rem) !important;
+  margin: 0 auto !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+body.medicine-flow-theme .orders-title,
+body.medicine-flow-theme .checkout-title,
+body.medicine-flow-theme .success-title,
+body.medicine-flow-theme .medicine-detail-name,
+body.medicine-flow-theme .section-title,
+body.medicine-flow-theme h1,
+body.medicine-flow-theme h2,
+body.medicine-flow-theme h3,
+body.medicine-flow-theme h4,
+body.medicine-flow-theme h5 {
+  font-family: 'Manrope', sans-serif;
+  color: #191c1e;
+}
+
+body.medicine-flow-theme .orders-title,
+body.medicine-flow-theme .checkout-title,
+body.medicine-flow-theme .success-title,
+body.medicine-flow-theme .medicine-detail-name,
+body.medicine-flow-theme .section-title,
+body.medicine-flow-theme h1 {
+  font-size: clamp(2rem, 3.2vw, 2.6rem) !important;
+  line-height: 1.18 !important;
+  font-weight: 800 !important;
+  color: #0058be !important;
+}
+
+body.medicine-flow-theme h2 {
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem) !important;
+  line-height: 1.28 !important;
+}
+
+body.medicine-flow-theme h3,
+body.medicine-flow-theme h4,
+body.medicine-flow-theme h5 {
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem) !important;
+  line-height: 1.35 !important;
+}
+
+body.medicine-flow-theme :is(
+  .cart-container,
+  .orders-container,
+  .checkout-container,
+  .payment-container,
+  .order-container,
+  .order-success-container,
+  .medicine-detail-container
+) :is(p, li, label, small, .text-muted, .status-text, .info-value, .info-label, .order-date, .item-details) {
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  color: #424754 !important;
+}
+
+body.medicine-flow-theme :is(
+  .cart-container,
+  .orders-container,
+  .checkout-container,
+  .payment-container,
+  .order-container,
+  .order-success-container,
+  .medicine-detail-container
+) :is(.amount, .price, .price-value, .item-price, .total, .summary-total, .amount-display) {
+  color: #191c1e !important;
+  font-weight: 800 !important;
+}
+
+body.medicine-flow-theme .order-card,
+body.medicine-flow-theme .cart-item,
+body.medicine-flow-theme .payment-card,
+body.medicine-flow-theme .success-card,
+body.medicine-flow-theme .medicine-detail-card,
+body.medicine-flow-theme .order-status-card,
+body.medicine-flow-theme .address-card,
+body.medicine-flow-theme .order-summary,
+body.medicine-flow-theme .form-section,
+body.medicine-flow-theme .address-section {
+  border: 1px solid rgba(194, 198, 214, 0.25) !important;
+  border-radius: 1rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.medicine-flow-theme .btn,
+body.medicine-flow-theme .btn-primary,
+body.medicine-flow-theme .btn-success,
+body.medicine-flow-theme .btn-checkout,
+body.medicine-flow-theme .btn-pay-now,
+body.medicine-flow-theme .shop-now-btn,
+body.medicine-flow-theme .view-details-btn {
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+}
+
+body.medicine-flow-theme .btn-primary,
+body.medicine-flow-theme .btn-success,
+body.medicine-flow-theme .btn-checkout,
+body.medicine-flow-theme .btn-pay-now,
+body.medicine-flow-theme .shop-now-btn,
+body.medicine-flow-theme .view-details-btn {
+  background: #0058be !important;
+  color: #ffffff !important;
+  border-color: #0058be !important;
+}
+
+body.medicine-flow-theme .btn-primary:hover,
+body.medicine-flow-theme .btn-success:hover,
+body.medicine-flow-theme .btn-checkout:hover,
+body.medicine-flow-theme .btn-pay-now:hover,
+body.medicine-flow-theme .shop-now-btn:hover,
+body.medicine-flow-theme .view-details-btn:hover {
+  background: #2170e4 !important;
+  border-color: #2170e4 !important;
+}
+
+body.medicine-flow-theme .btn-outline,
+body.medicine-flow-theme .btn-outline-primary,
+body.medicine-flow-theme .btn-outline-secondary,
+body.medicine-flow-theme .btn-secondary,
+body.medicine-flow-theme .retry-btn,
+body.medicine-flow-theme .cancel-btn {
+  background: #ffffff !important;
+  color: #0058be !important;
+  border: 1px solid rgba(194, 198, 214, 0.55) !important;
+}
+
+body.medicine-flow-theme .btn-outline:hover,
+body.medicine-flow-theme .btn-outline-primary:hover,
+body.medicine-flow-theme .btn-outline-secondary:hover,
+body.medicine-flow-theme .btn-secondary:hover,
+body.medicine-flow-theme .retry-btn:hover,
+body.medicine-flow-theme .cancel-btn:hover {
+  background: #eff6ff !important;
+  border-color: #adc6ff !important;
+}
+
+body.medicine-flow-theme .form-control,
+body.medicine-flow-theme .form-select,
+body.medicine-flow-theme .quantity-input {
+  border: 1px solid rgba(194, 198, 214, 0.6) !important;
+  border-radius: 0.75rem !important;
+}
+
+body.medicine-flow-theme .form-control:focus,
+body.medicine-flow-theme .form-select:focus,
+body.medicine-flow-theme .quantity-input:focus {
+  border-color: #0058be !important;
+  box-shadow: 0 0 0 3px rgba(0, 88, 190, 0.12) !important;
+}
+
+body.medicine-flow-theme .order-date,
+body.medicine-flow-theme .item-details,
+body.medicine-flow-theme .status-text,
+body.medicine-flow-theme .security-info,
+body.medicine-flow-theme p.text-muted {
+  color: #565e74 !important;
+}
+
+@media (max-width: 768px) {
+  body.medicine-flow-theme .cart-container,
+  body.medicine-flow-theme .orders-container,
+  body.medicine-flow-theme .checkout-container,
+  body.medicine-flow-theme .payment-container,
+  body.medicine-flow-theme .order-container,
+  body.medicine-flow-theme .order-success-container,
+  body.medicine-flow-theme .medicine-detail-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}

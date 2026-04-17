@@ -1,0 +1,12 @@
+{
+  "watch": ["controllers", "models", "routes", "middlewares", "utils", "app.js", "swaggerConfig.js"],
+  "ext": "js,mjs,cjs,json",
+  "ignore": [
+    "logs/**",
+    "uploads/**",
+    "public/uploads/**",
+    "FFSD Project Final/Uploads/**",
+    "*.log"
+  ],
+  "delay": "500"
+}

@@ -1,0 +1,134 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: fdfed-mongodb
+    ports:
+      - "${MONGODB_PORT:-27017}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: mediquick
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - fdfed-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: fdfed-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - fdfed-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fdfed-backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "${BACKEND_PORT:-3003}:3002"
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SOLR_URL: http://solr:8983
+      # SMTP Configuration - Update these with your actual credentials
+      SMTP_USER: ${SMTP_USER:-mediquickotp@gmail.com}
+      SMTP_PASS: ${SMTP_PASS:-your-app-password-here}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      solr:
+        condition: service_healthy
+    volumes:
+      - backend_logs:/app/logs
+    networks:
+      - fdfed-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').createConnection(3002,'127.0.0.1');s.on('connect',()=>{s.destroy();process.exit(0)});s.on('error',()=>process.exit(1));setTimeout(()=>process.exit(1),3000)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Solr Search Engine
+  solr:
+    image: solr:9
+    container_name: fdfed-solr
+    command: solr-precreate medicines
+    ports:
+      - "${SOLR_PORT:-8983}:8983"
+    networks:
+      - fdfed-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/info/system"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./FDFED_project_react_app
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3003
+    container_name: fdfed-frontend
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - fdfed-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  fdfed-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  redis_data:
+    driver: local
+  backend_logs:
+    driver: local

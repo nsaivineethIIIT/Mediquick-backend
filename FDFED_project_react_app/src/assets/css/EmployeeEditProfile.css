@@ -1,0 +1,281 @@
+   @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+        :root {
+            --blue: #0188df;
+            --black: #444d53;
+            --white: #fff;
+        }
+
+        * {
+            font-family: "Roboto", sans-serif;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            outline: none;
+            box-sizing: border-box;
+            transition: all linear .2s;
+        }
+
+        html {
+            font-size: 62.5%;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 96%;
+            background: var(--white);
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translate(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            z-index: 1000;
+        }
+
+        header a {
+            color: var(--black);
+        }
+
+        header a:hover {
+            color: var(--blue);
+        }
+
+        header .logo {
+            font-size: 3rem;
+        }
+
+        header .logo span {
+            color: var(--blue);
+        }
+
+        header .navbar ul {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            list-style: none;
+        }
+
+        header .navbar ul li {
+            margin: 0 1rem;
+        }
+
+        header .navbar ul li a {
+            font-size: 2rem;
+            color: var(--black);
+        }
+
+        header .navbar ul li a:hover {
+            color: var(--blue);
+        }
+
+        header .fa-bars {
+            font-size: 3rem;
+            color: var(--blue);
+            cursor: pointer;
+            display: none;
+        }
+
+        header .fa-times {
+            transform: rotate(180deg);
+        }
+
+        .header-active {
+            top: 0;
+            width: 100%;
+            box-shadow: .1rem .3rem rgba(0, 0, 0, .3);
+        }
+
+        .footer {
+            background: var(--black);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+
+        .footer .box {
+            width: 22rem;
+            margin: 1rem;
+            text-align: center;
+        }
+
+        .footer .box:first-child {
+            text-align: left;
+        }
+
+        .footer .box .logo {
+            padding: 1rem 0;
+            font-size: 2.2rem;
+            color: var(--white);
+        }
+
+        .footer .box .logo:hover {
+            color: var(--blue);
+        }
+
+        .footer .box .logo span {
+            color: var(--blue);
+        }
+
+        .footer .box p {
+            font-size: 1.2rem;
+            color: var(--white);
+        }
+
+        .footer .box a {
+            color: var(--white);
+            font-size: 1.5rem;
+            display: block;
+            padding: .15rem 0;
+        }
+
+        .footer .box a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .credit {
+            width: 85%;
+            padding-top: 0.5rem;
+            font-size: 1.4rem;
+            color: var(--white);
+            text-align: center;
+            border-top: .15rem solid var(--white);
+        }
+
+        .footer .credit span {
+            color: var(--blue);
+            text-decoration: underline;
+            letter-spacing: .3rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15%;
+            left: 5%;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .profile-form input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-left: 5%;
+        }
+
+        .patient-profile {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            margin: 100px 20px 20px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            height: 3.5rem;
+            width: 15rem;
+            background: var(--black);
+            color: var(--white);
+            font-size: 1.7rem;
+            /* text-transform: capitalize; */
+            border-radius: .5rem;
+            cursor: pointer;
+            margin: 1rem 0;
+            border: .1rem solid var(--blue);
+            margin-left: 42%;
+        }
+
+        .button:hover {
+            border: .1rem solid var(--blue);
+            background: var(--white);
+            color: var(--blue);
+            letter-spacing: .2rem;
+        }
+         #errorMsg,#errlogin{
+        color: red;
+        text-align: center;
+        margin: 10px 0;
+        font-size: 1.4rem;
+    }
+    
+    #successMsg,#successlogin{
+        color: green;
+        text-align: center;
+        margin: 10px 0;
+        font-size: 1.4rem;
+    }
+
+    .error-input {
+      border: 1px solid red !important;
+    }
+
+
+
+        @media (max-width:768px) {
+            html {
+                font-size: 55%;
+            }
+
+            header .fa-bars {
+                display: block;
+            }
+
+            header .navbar {
+                position: fixed;
+                top: -100rem;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                opacity: 0;
+            }
+
+            header .navbar ul {
+                flex-flow: column;
+                padding: 2rem 0;
+            }
+
+            header .navbar ul li {
+                margin: 1rem 0;
+                width: 100%;
+                text-align: center;
+            }
+
+            header .navbar ul li a {
+                font-size: 2rem;
+                display: block;
+            }
+
+            header .nav-toggle {
+                top: 5.5rem;
+                opacity: 1;
+            }
+
+            .patient-profile .button {
+                margin-left: 32.5%;
+            }
+        }

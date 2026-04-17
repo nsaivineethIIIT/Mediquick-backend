@@ -1,0 +1,917 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --blue: #0188df;
+    --black: #444d53;
+    --white: #fff;
+    --grey: #6c757d;
+}
+
+* {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+h3 {
+    font-size: 2rem;
+}
+
+.button {
+    height: 3.5rem;
+    width: 15rem;
+    background: var(--black);
+    color: var(--white);
+    font-size: 1.7rem;
+    /* text-transform: capitalize; */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 1rem auto;
+    border: 0.1rem solid var(--blue);
+    display: block;
+    transition: background 0.2s ease, color 0.2s ease, border 0.2s ease;
+}
+
+
+.doctor-dashboard {
+    min-height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.doctor-dashboard h1 {
+    margin-top: 100px;
+    color: var(--blue);
+    text-align: center;
+}
+
+.button:hover {
+    border: 0.1rem solid var(--blue);
+    background: var(--white);
+    color: var(--blue);
+    letter-spacing: 0.2rem;
+}
+
+
+.right-section {
+    width: 100%;
+    max-width: 75rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+    margin: 2rem auto 2rem auto;
+    box-sizing: border-box;
+}
+
+.appointment-slots {
+    margin-bottom: 2rem;
+}
+
+.date-selection {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    white-space: nowrap;
+}
+
+.date-selection button {
+    padding: 1rem;
+    border: 0.1rem solid var(--black);
+    border-radius: 0.5rem;
+    background: #f9f9f9;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 1.4rem;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.date-selection button.selected {
+    background: var(--blue);
+    color: var(--white);
+}
+
+.slots {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.slots h3 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    color: var(--black);
+}
+
+.slots button {
+    padding: 1rem;
+    border: 0.1rem solid var(--black);
+    border-radius: 0.5rem;
+    background: var(--white);
+    cursor: pointer;
+    margin: 0.5rem;
+    font-size: 1.4rem;
+    width: 10rem;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.slots button.selected {
+    background: var(--blue);
+    color: var(--white);
+}
+
+.slots button.booked {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    border: 1px solid #999;
+}
+
+.heading {
+    text-align: center;
+    font-size: 3rem;
+    padding: 1rem;
+    padding-top: 8rem;
+    color: var(--black);
+    letter-spacing: 0.1rem;
+}
+
+.welcome-message {
+    text-align: center;
+    font-size: 3.5rem;
+    padding: 2rem 1rem 1rem;
+    padding-top: 10rem;
+    color: var(--blue);
+    font-weight: 600;
+    margin: 0;
+}
+
+
+header {
+    width: 100vw;
+    max-width: 100vw;
+    background: var(--white);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 3vw 1.2rem 3vw;
+    z-index: 1000;
+    box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e5e7eb;
+}
+
+header a {
+    color: var(--black);
+    transition: color 0.2s ease;
+}
+
+header a:hover {
+    color: var(--blue);
+}
+
+header .logo {
+    font-size: 3rem;
+}
+
+header .logo span {
+    color: var(--blue);
+}
+
+header .navbar ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+}
+
+header .navbar ul li {
+    margin: 0 1rem;
+}
+
+header .navbar ul li a {
+    font-size: 2rem;
+    color: var(--black);
+    transition: color 0.2s ease;
+}
+
+header .navbar ul li a:hover {
+    color: var(--blue);
+}
+
+header .fa-bars {
+    font-size: 3rem;
+    color: var(--blue);
+    cursor: pointer;
+    display: none;
+}
+
+header .profile-link {
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
+}
+
+header .header-profile-image {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 0.2rem solid var(--blue);
+    cursor: pointer;
+}
+
+header .header-profile-image:hover {
+    border-color: var(--black);
+}
+
+.header-active {
+    top: 0;
+    width: 100vw;
+    box-shadow: 0 0.2rem 1.2rem rgba(0,0,0,0.08);
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.about {
+    background: var(--white);
+    padding: 4rem 0;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+/* Quick Links Section */
+.quick-links-section {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 3vw;
+}
+
+.quick-links-heading {
+    font-size: 2.5rem;
+    color: var(--blue);
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 600;
+}
+
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.quick-link-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.quick-link-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-link-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.quick-link-card p {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+/* Box Container Styling for All Sections */
+
+.about .box-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 2rem;
+    padding: 2rem 3vw;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.about .box-container .box {
+    background: var(--white) !important;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.15) !important;
+    border: none;
+    padding: 2rem;
+    width: 100%;
+    max-width: 320px;
+    min-width: 260px;
+    text-align: center;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.about .box-container .box:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-3px);
+}
+
+.about .box-container .box h3 {
+    color: var(--blue);
+    margin-bottom: 1rem;
+    font-size: 2.2rem;
+    /* text-transform: capitalize; */
+    width: 100%;
+    display: block;
+}
+
+.about .box-container .box p {
+    font-size: 1.5rem;
+    color: var(--black);
+    margin: 0.8rem 0;
+    line-height: 1.6;
+    text-align: left;
+    width: 100%;
+    display: block;
+}
+
+.about .box-container .box p strong {
+    color: var(--black);
+    font-weight: 600;
+    display: inline-block;
+    min-width: 6rem;
+}
+
+/* Action Buttons Styling */
+.about .box-container .box .action-buttons {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.about .box-container .box .action-buttons button {
+    flex-grow: 1;
+    min-width: 120px;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 0.4rem;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+}
+
+.about .box-container .box .action-buttons button:first-child {
+    background: #28a745;
+    color: white;
+}
+
+.about .box-container .box .action-buttons button:first-child:hover {
+    background: #218838;
+}
+
+.about .box-container .box .action-buttons button:nth-child(2) {
+    background: var(--blue);
+    color: white;
+}
+
+.about .box-container .box .action-buttons button:nth-child(2):hover {
+    background: #0056b3;
+}
+
+/* Status Styling */
+.about .box-container .box .status {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    /* text-transform: capitalize; */
+    margin-left: 0.5rem;
+}
+
+/* Override any conflicting styles for box children */
+.about .box-container .box > * {
+    flex-shrink: 0;
+}
+
+.about .box-container .box .status.completed {
+    background: #28a745;
+    color: white;
+}
+
+.about .box-container .box .status.confirmed {
+    background: var(--blue);
+    color: white;
+}
+
+.about .box-container .box .status.cancelled {
+    background: #dc3545;
+    color: white;
+}
+
+.about .box-container .box .status.pending {
+    background: #ffc107;
+    color: var(--black);
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 12.5%;
+    left: 2%;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: 5px 10px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+
+/* Remove duplicate footer styles. Use only one footer in the component. */
+.footer {
+    background: var(--black);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    width: 100vw;
+    box-sizing: border-box;
+}
+.footer .box {
+    width: 30rem;
+    margin: 2rem;
+    text-align: center;
+}
+.footer .box .logo {
+    padding: 2rem 0;
+    font-size: 3rem;
+    color: var(--white);
+}
+.footer .box .logo span {
+    color: var(--blue);
+}
+.footer .box p {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+.footer .box a {
+    color: var(--white);
+    font-size: 2rem;
+    display: block;
+    padding: 0.2rem 0;
+}
+.footer .box a:hover {
+    text-decoration: underline;
+}
+.footer .credit {
+    width: 85%;
+    padding-top: 1rem;
+    font-size: 2rem;
+    color: var(--white);
+    text-align: center;
+    border-top: 0.2rem solid var(--white);
+}
+.footer .credit span {
+    color: var(--blue);
+    text-decoration: underline;
+    letter-spacing: 0.5rem;
+}
+
+/* Table container styling */
+.table-container {
+    width: 100%;
+    max-width: 75rem;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+/* Table styling */
+#financeTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.4rem;
+    color: var(--black);
+    font-family: "Roboto", sans-serif;
+}
+
+/* Table header styling */
+#financeTable thead th {
+    background-color: var(--blue);
+    color: var(--white);
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    letter-spacing: 0.1rem;
+}
+
+/* Table body styling */
+#financeTable tbody td {
+    padding: 1rem 1.5rem;
+    border-bottom: 0.1rem solid #e0e0e0;
+    vertical-align: middle;
+    color: var(--black);
+}
+
+/* Table row hover effect */
+#financeTable tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Loading, empty, and error message styling */
+#financeTable .loading,
+#financeTable .empty,
+#financeTable .error {
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+    color: #666;
+    font-size: 1.4rem;
+}
+
+/* Table footer styling */
+#financeTable tfoot {
+    background-color: var(--white);
+    font-weight: 600;
+}
+
+/* Table footer cells */
+#financeTable tfoot td {
+    padding: 1rem 1.5rem;
+    border-top: 0.2rem solid var(--blue);
+    color: var(--black);
+}
+
+/* Currency values styling */
+#financeTable td:nth-child(4),
+#financeTable td:nth-child(5),
+#financeTable tfoot td:nth-child(2),
+#financeTable tfoot td:nth-child(3) {
+    text-align: right;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+}
+
+/* Status styling */
+#financeTable td:nth-child(6) {
+    /* text-transform: capitalize; */
+    color: var(--blue);
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 1200px) {
+    .about .box-container {
+        padding: 2rem 1vw;
+    }
+    .right-section {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .about .box-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .about .box-container .box {
+        max-width: 95vw;
+    }
+    .right-section {
+        max-width: 98vw;
+    }
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 55%;
+    }
+    header {
+        padding: 1rem 2vw;
+    }
+    .about .box-container {
+        padding: 1rem 0.5vw;
+    }
+    .about .box-container .box {
+        padding: 1.2rem 0.7rem;
+    }
+    .right-section {
+        padding: 1rem;
+    }
+    .footer {
+        padding: 1.2rem 0;
+    }
+}
+
+/* Loading state animation */
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+#financeTable .loading {
+    animation: pulse 1.5s infinite;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 55%;
+    }
+
+    header .fa-bars {
+        display: block;
+    }
+
+    header .navbar {
+        position: fixed;
+        top: -100rem;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        opacity: 0;
+    }
+
+    header .navbar ul {
+        flex-flow: column;
+        padding: 2rem 0;
+    }
+
+    header .navbar ul li {
+        margin: 1rem 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    header .navbar ul li a {
+        font-size: 2rem;
+        display: block;
+    }
+
+    header .nav-toggle {
+        top: 5.5rem;
+        opacity: 1;
+    }
+
+    .about .box-container .box {
+        width: 90%;
+    }
+
+    .quick-links-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .quick-links-heading {
+        font-size: 2rem;
+    }
+
+    .quick-link-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .chart-container {
+        max-width: 100%;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.chat-messages {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.chat-input button {
+    padding: 8px 16px;
+    background-color: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.chat-input button:hover {
+    background-color: #0056b3;
+}
+
+.chat-btn {
+    background-color: var(--blue);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.message {
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 4px;
+    max-width: 80%;
+}
+
+.message.sent {
+    background-color: var(--blue);
+    color: white;
+    margin-left: auto;
+}
+
+.message.received {
+    background-color: #f0f0f0;
+    margin-right: auto;
+}
+
+/* Doctor Notes Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 {
+    font-size: 2.4rem;
+    margin-bottom: 15px;
+}
+
+.modal-content label {
+    font-size: 1.6rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.4rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: inherit;
+}
+
+.modal-content input[type="file"] {
+    font-size: 1.4rem;
+}
+
+.modal-content button {
+    font-size: 1.4rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.modal-content button:hover {
+    opacity: 0.9;
+}

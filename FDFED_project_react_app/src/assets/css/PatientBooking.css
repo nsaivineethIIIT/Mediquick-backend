@@ -1,0 +1,575 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --pb-blue: #1E88E5;
+    --pb-blue-dark: #1565C0;
+    --pb-teal: #00BFA6;
+    --pb-light-blue: #E3F2FD;
+    --pb-green: #1bb55c;
+    --pb-green-bg: #e6f7ed;
+    --pb-orange: #ff8c00;
+    --pb-gray-dark: #1f2937;
+    --pb-gray-mid: #4b5563;
+    --pb-gray-light: #6b7280;
+    --pb-bg: #f0f5fb;
+    --pb-white: #ffffff;
+    --pb-border: #dbe6f1;
+    --pb-error: #ef4444;
+    --pb-shadow: 0 12px 35px rgba(0,0,0,0.07);
+    --pb-shadow-hover: 0 20px 50px rgba(0,0,0,0.13);
+}
+
+/* ============================================
+   PAGE WRAPPER
+   ============================================ */
+.book-appointment,
+.book-doc-online {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #f4f8fb, #eaf3fa);
+    min-height: 100vh;
+    padding: 2rem 0 6rem;
+}
+
+/* ============================================
+   LEGACY HEADER (BookAppointment has own header)
+   ============================================ */
+.book-appointment header {
+    display: none;
+}
+
+/* ============================================
+   SEARCH / FILTER SECTION
+   ============================================ */
+.search-doctor {
+    max-width: 90rem;
+    margin: 3rem auto 3.5rem;
+    padding: 3.5rem;
+    background: var(--pb-white);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    border: 1px solid var(--pb-border);
+}
+
+.search-doctor .heading {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--pb-blue);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.search-doctor .heading::after {
+    content: '';
+    display: block;
+    width: 5rem;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pb-blue), var(--pb-teal));
+    border-radius: 2px;
+    margin: 1rem auto 0;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+}
+
+.search-bar input,
+.filter-dropdown {
+    flex: 1;
+    min-width: 18rem;
+    padding: 1.3rem 1.6rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--pb-border);
+    font-size: 1.4rem;
+    font-family: inherit;
+    color: var(--pb-gray-dark);
+    background: var(--pb-white);
+    transition: all 0.25s ease;
+    appearance: none;
+}
+
+.search-bar input::placeholder {
+    color: #9ca3af;
+}
+
+.search-bar input:focus,
+.filter-dropdown:focus {
+    outline: none;
+    border-color: var(--pb-blue);
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.12);
+}
+
+.filter-dropdown {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 9 4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1.2rem center;
+    background-size: 1.4em;
+    padding-right: 3.5rem;
+    cursor: pointer;
+}
+
+.button {
+    padding: 1.3rem 2.8rem;
+    border: none;
+    background: linear-gradient(135deg, var(--pb-blue), var(--pb-teal));
+    color: var(--pb-white);
+    cursor: pointer;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(30, 136, 229, 0.25);
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(30, 136, 229, 0.35);
+}
+
+/* ============================================
+   SECTION TITLE
+   ============================================ */
+.doctor-list {
+    max-width: 120rem;
+    margin: 0 auto;
+    padding: 0 3rem;
+}
+
+.doctor-list .title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--pb-gray-dark);
+    margin-bottom: 2.5rem;
+    position: relative;
+    padding-bottom: 1rem;
+    display: inline-block;
+}
+
+.doctor-list .title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 5rem;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pb-blue), var(--pb-teal));
+    border-radius: 2px;
+}
+
+/* ============================================
+   DOCTOR CARDS GRID
+   ============================================ */
+.scroll-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48rem, 1fr));
+    gap: 2rem;
+}
+
+/* ============================================
+   DOCTOR CARD – Horizontal, Practo-style
+   ============================================ */
+.doctor-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    background: var(--pb-white);
+    padding: 2.5rem;
+    border-radius: 18px;
+    box-shadow: var(--pb-shadow);
+    border: 1px solid rgba(219, 230, 241, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeUp 0.4s ease-out both;
+    position: relative;
+    overflow: hidden;
+}
+
+.doctor-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--pb-blue), var(--pb-teal));
+    border-radius: 18px 0 0 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--pb-shadow-hover);
+    border-color: var(--pb-blue);
+}
+
+.doctor-card:hover::before {
+    opacity: 1;
+}
+
+/* Doctor photo */
+.doctor-card > img {
+    width: 9rem;
+    height: 9rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--pb-light-blue);
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    background: var(--pb-light-blue);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.1);
+}
+
+.doctor-card:hover > img {
+    border-color: var(--pb-blue);
+    box-shadow: 0 6px 20px rgba(30, 136, 229, 0.2);
+}
+
+/* Doctor info block */
+.doctor-card > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+    justify-content: flex-start;
+}
+
+/* Doctor name row */
+.doctor-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--pb-blue);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    line-height: 1.3;
+}
+
+/* Truncate long names cleanly */
+.doctor-card h3 > span:first-child,
+.doctor-card h3 [class="doctor-name-text"] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 28rem;
+    display: inline-block;
+}
+
+/* Detail paragraphs */
+.doctor-card p {
+    font-size: 1.35rem;
+    color: var(--pb-gray-mid);
+    margin-bottom: 0.4rem;
+    line-height: 1.55;
+}
+
+.doctor-card p strong {
+    color: var(--pb-gray-dark);
+    font-weight: 600;
+}
+
+/* Specialist tag chip */
+.doctor-card p:first-of-type {
+    display: inline-flex;
+    align-items: center;
+    background: var(--pb-light-blue);
+    color: var(--pb-blue);
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 0.8rem;
+    width: fit-content;
+}
+
+/* Online badge */
+.online-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--pb-green-bg);
+    color: var(--pb-green);
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.4rem 1.1rem;
+    border-radius: 50px;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+    border: 1px solid rgba(27, 181, 92, 0.2);
+    text-transform: uppercase;
+}
+
+.online-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--pb-green);
+    border-radius: 50%;
+    animation: blink 1.5s ease-in-out infinite;
+    box-shadow: 0 0 0 2px rgba(27, 181, 92, 0.25);
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Rating - override inline style with a class-friendly override */
+.doctor-card p[style] {
+    color: var(--pb-orange) !important;
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    background: #fff8ee;
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.2rem;
+    margin-bottom: 0.4rem;
+    width: fit-content;
+}
+
+/* Consult / Book button */
+.book-now {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: auto;
+    padding-top: 1.6rem;
+    background: linear-gradient(135deg, var(--pb-blue) 0%, var(--pb-teal) 100%);
+    color: var(--pb-white);
+    border: none;
+    padding: 1rem 2.4rem;
+    border-radius: 50px;
+    font-size: 1.35rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(30, 136, 229, 0.28);
+    align-self: flex-start;
+    letter-spacing: 0.02em;
+    margin-top: 1.6rem;
+}
+
+.book-now::after {
+    content: '\2192';
+    font-size: 1.4rem;
+    transition: transform 0.2s ease;
+}
+
+.book-now:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 26px rgba(30, 136, 229, 0.4);
+}
+
+.book-now:hover::after {
+    transform: translateX(4px);
+}
+
+/* ============================================
+   STATES: Loading / Error / Empty
+   ============================================ */
+.loading {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 1.6rem;
+    color: var(--pb-blue);
+    font-weight: 500;
+}
+
+.loading i {
+    margin-right: 1rem;
+}
+
+.error-message {
+    text-align: center;
+    padding: 2rem 3rem;
+    font-size: 1.5rem;
+    color: var(--pb-error);
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.no-doctors {
+    text-align: center;
+    padding: 5rem 2rem;
+    font-size: 1.6rem;
+    color: var(--pb-gray-light);
+    background: var(--pb-white);
+    border-radius: 18px;
+    border: 2px dashed var(--pb-border);
+}
+
+/* ============================================
+   FOOTER (BookAppointment)
+   ============================================ */
+.book-appointment .footer,
+.book-doc-online .footer {
+    background: var(--pb-gray-dark);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem;
+    padding: 4rem 5%;
+    margin-top: 6rem;
+}
+
+.book-appointment .footer .box,
+.book-doc-online .footer .box {
+    width: 25rem;
+    text-align: left;
+}
+
+.book-appointment .footer .box .logo,
+.book-doc-online .footer .box .logo {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--pb-white);
+    display: block;
+    margin-bottom: 1.2rem;
+}
+
+.book-appointment .footer .box .logo span,
+.book-doc-online .footer .box .logo span {
+    color: var(--pb-blue);
+}
+
+.book-appointment .footer .box h3,
+.book-doc-online .footer .box h3 {
+    font-size: 1.5rem;
+    color: var(--pb-white);
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+}
+
+.book-appointment .footer .box p,
+.book-doc-online .footer .box p {
+    font-size: 1.35rem;
+    color: #9ca3af;
+    line-height: 1.6;
+}
+
+.book-appointment .footer .box a,
+.book-doc-online .footer .box a {
+    display: block;
+    font-size: 1.35rem;
+    color: #9ca3af;
+    margin-bottom: 0.7rem;
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+
+.book-appointment .footer .box a:hover,
+.book-doc-online .footer .box a:hover {
+    color: var(--pb-blue);
+}
+
+.book-appointment .footer .credit,
+.book-doc-online .footer .credit {
+    width: 100%;
+    text-align: center;
+    font-size: 1.3rem;
+    color: #6b7280;
+    padding-top: 2rem;
+    border-top: 1px solid #374151;
+}
+
+.book-appointment .footer .credit span,
+.book-doc-online .footer .credit span {
+    color: var(--pb-blue);
+    font-weight: 600;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.doctor-card:nth-child(2) { animation-delay: 0.07s; }
+.doctor-card:nth-child(3) { animation-delay: 0.14s; }
+.doctor-card:nth-child(4) { animation-delay: 0.21s; }
+.doctor-card:nth-child(5) { animation-delay: 0.28s; }
+.doctor-card:nth-child(6) { animation-delay: 0.35s; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 900px) {
+    .search-doctor {
+        padding: 2.5rem 2rem;
+        margin: 2rem 2rem 3rem;
+    }
+
+    .scroll-container {
+        grid-template-columns: 1fr;
+    }
+
+    .doctor-list {
+        padding: 0 2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-bar input,
+    .filter-dropdown,
+    .button {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .doctor-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .doctor-card > img {
+        width: 8rem;
+        height: 8rem;
+        margin-bottom: 0;
+    }
+
+    .doctor-card h3 {
+        justify-content: center;
+    }
+
+    .book-now {
+        align-self: center;
+    }
+
+    .doctor-list {
+        padding: 0 1.5rem;
+    }
+
+    .search-doctor {
+        margin: 1.5rem 1.5rem 2.5rem;
+    }
+}
+
+

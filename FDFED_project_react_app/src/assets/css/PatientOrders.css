@@ -1,0 +1,349 @@
+/* PatientOrders.css */
+.orders-container {
+    max-width: 1200px;
+    margin: 80px auto 20px;
+    padding: 20px;
+    min-height: calc(100vh - 200px);
+}
+
+.orders-title {
+    font-size: 2.4rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    text-align: center;
+    padding: 40px;
+    background: #fee;
+    border-radius: 10px;
+    color: #e74c3c;
+}
+
+.error-message i {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.retry-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 1rem;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.no-orders i {
+    font-size: 64px;
+    color: #bdc3c7;
+    margin-bottom: 20px;
+}
+
+.no-orders h3 {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.shop-now-btn {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-top: 20px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.shop-now-btn:hover {
+    background: #2980b9;
+}
+
+.order-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.order-info h3 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.order-date {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.order-date i {
+    margin-right: 5px;
+}
+
+.order-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-shipped {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-delivered {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.order-items {
+    margin-bottom: 20px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-info h4 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.item-details {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.item-total {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #ecf0f1;
+}
+
+.order-total {
+    font-size: 1.1rem;
+}
+
+.order-total strong {
+    margin-right: 10px;
+    color: #2c3e50;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.view-details-btn, .cancel-btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.view-details-btn {
+    background: #3498db;
+    color: white;
+}
+
+.cancel-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+}
+
+.view-details-btn:hover {
+    background: #2980b9;
+}
+
+.cancel-btn:hover {
+    background: #c0392b;
+}
+
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 15px;
+        margin-top: 60px;
+    }
+
+    .order-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .order-status {
+        align-self: flex-start;
+    }
+
+    .order-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .order-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .view-details-btn, .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Enhanced styling for order details info */
+.order-details-info {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payment-info, .address-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.payment-info i, .address-info i {
+    color: #0188df;
+    width: 16px;
+    text-align: center;
+}
+
+.medicine-id {
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+/* Enhanced button styling */
+.view-details-btn {
+    background: linear-gradient(45deg, #0188df, #0056b3) !important;
+    color: white !important;
+    padding: 10px 18px !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border: none !important;
+}
+
+.view-details-btn:hover {
+    background: linear-gradient(45deg, #0056b3, #0188df) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(1, 136, 223, 0.3) !important;
+    text-decoration: none !important;
+    color: white !important;
+}
+
+.cancel-btn {
+    background: linear-gradient(45deg, #dc3545, #c82333) !important;
+    color: white !important;
+    padding: 10px 18px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.cancel-btn:hover {
+    background: linear-gradient(45deg, #c82333, #dc3545) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3) !important;
+}

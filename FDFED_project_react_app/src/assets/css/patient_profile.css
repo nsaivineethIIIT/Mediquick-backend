@@ -1,0 +1,70 @@
+/* Patient Profile Page Custom Styles */
+.patient-profile .profile-container {
+  max-width: 860px;
+  margin: auto;
+}
+
+.patient-profile .profile-header {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 30px !important;
+  flex-wrap: wrap;
+}
+
+.patient-profile .profile-picture {
+  flex-shrink: 0;
+  width: 110px !important;
+  height: 110px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 4px solid #eaf3fa !important;
+  box-shadow: 0 4px 16px rgba(1,136,223,0.15) !important;
+  background: #f7fbff !important;
+  margin: 0 !important;
+}
+
+.patient-profile .profile-picture img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.patient-profile .profile-info {
+  text-align: left !important;
+  width: auto !important;
+  flex: 1 !important;
+  align-items: flex-start !important;
+}
+
+.patient-profile .profile-info h1 {
+  font-size: 2rem !important;
+  color: #1a2940 !important;
+  margin-bottom: 4px !important;
+  font-weight: 700 !important;
+}
+
+.patient-profile .close-btn {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-size: 1.8rem;
+  color: #6b7a8d;
+  cursor: pointer;
+  background: #f0f4f8;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+  z-index: 10;
+}
+
+.patient-profile .close-btn:hover {
+  background: #fde8e8;
+  color: #c53030;
+}

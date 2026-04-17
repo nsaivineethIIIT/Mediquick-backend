@@ -1,0 +1,390 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --blue: #0188df;
+  --black: #444d53;
+  --white: #fff;
+}
+
+.admin-edit-profile * {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  outline: none;
+  box-sizing: border-box;
+  transition: all linear .2s;
+}
+
+.admin-edit-profile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #eef2f6 0%, #e2e8f0 45%, #cbd5e1 100%);
+}
+
+.admin-edit-profile header {
+  width: 96%;
+  background: var(--white);
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translate(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  z-index: 1000;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.admin-edit-profile header a {
+  color: var(--black);
+}
+
+.admin-edit-profile header a:hover {
+  color: var(--blue);
+}
+
+.admin-edit-profile header .logo {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.admin-edit-profile header .logo span {
+  color: var(--blue);
+}
+
+.admin-edit-profile header .navbar ul {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+}
+
+.admin-edit-profile header .navbar ul li {
+  margin: 0 1rem;
+}
+
+.admin-edit-profile header .navbar ul li a {
+  font-size: 2rem;
+  color: var(--black);
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+.admin-edit-profile header .navbar ul li a:hover {
+  color: var(--blue);
+  background-color: rgba(1, 136, 223, 0.1);
+}
+
+.admin-edit-profile header .fa-bars {
+  font-size: 3rem;
+  color: var(--blue);
+  cursor: pointer;
+  display: none;
+}
+
+.admin-edit-profile header .fa-times {
+  transform: rotate(180deg);
+}
+
+.admin-edit-profile .header-active {
+  top: 0;
+  width: 100%;
+  box-shadow: 0.1rem 0.3rem rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+}
+
+.admin-edit-profile .admin-edit-profile-section {
+  flex: 1;
+  padding: 28px;
+  background: #fff;
+  margin: 100px 24px 32px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  border: 1px solid #cbd5e1;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-edit-profile .admin-edit-profile-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0b7a6f 0%, #095a52 100%);
+  opacity: 0.9;
+}
+
+.admin-edit-profile .close-btn {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  font-size: 2.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  padding: 5px 10px;
+  transition: 0.3s;
+  color: var(--black);
+}
+
+.admin-edit-profile .close-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.admin-edit-profile .profile-form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.admin-edit-profile .profile-form input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1.6rem;
+  transition: border-color 0.3s ease;
+}
+
+.admin-edit-profile .profile-form input:focus {
+  border-color: #0b7a6f;
+  box-shadow: 0 0 0 3px rgba(11, 122, 111, 0.2);
+}
+
+.admin-edit-profile .profile-form .error-input {
+  border: 1px solid #f44336 !important;
+  background-color: #ffebee;
+}
+
+.admin-edit-profile .field-error {
+  color: #f44336;
+  font-size: 1.4rem;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.admin-edit-profile .form-messages {
+  margin-bottom: 20px;
+}
+
+.admin-edit-profile .error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+}
+
+.admin-edit-profile .success-message {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+}
+
+.admin-edit-profile .message {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.admin-edit-profile .message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.admin-edit-profile .message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.admin-edit-profile .button {
+  height: 4.5rem;
+  width: 20rem;
+  background: var(--black);
+  color: var(--white);
+  font-size: 1.7rem;
+  border-radius: .5rem;
+  cursor: pointer;
+  margin: 2rem auto;
+  border: .1rem solid var(--blue);
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.admin-edit-profile .button:hover:not(:disabled) {
+  border: .1rem solid #0b7a6f;
+  background: var(--white);
+  color: #0b7a6f;
+  letter-spacing: .05rem;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 122, 111, 0.25);
+}
+
+.admin-edit-profile .button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admin-edit-profile .loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.8rem;
+  color: #666;
+}
+
+.admin-edit-profile .footer {
+  background: var(--black);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 2rem 0;
+  margin-top: auto;
+}
+
+.admin-edit-profile .footer .box {
+  width: 30rem;
+  margin: 2rem;
+  text-align: center;
+}
+
+.admin-edit-profile .footer .box .logo {
+  padding: 2rem 0;
+  font-size: 3rem;
+  color: var(--white);
+}
+
+.admin-edit-profile .footer .box .logo:hover {
+  color: var(--blue);
+}
+
+.admin-edit-profile .footer .box .logo span {
+  color: var(--blue);
+}
+
+.admin-edit-profile .footer .box p {
+  font-size: 1.5rem;
+  color: var(--white);
+  line-height: 1.6;
+}
+
+.admin-edit-profile .footer .box a {
+  color: var(--white);
+  font-size: 2rem;
+  display: block;
+  padding: .2rem 0;
+  transition: color 0.3s ease;
+}
+
+.admin-edit-profile .footer .box a:hover {
+  text-decoration: underline;
+  color: var(--blue);
+}
+
+.admin-edit-profile .footer .credit {
+  width: 85%;
+  padding-top: 1rem;
+  font-size: 2rem;
+  color: var(--white);
+  text-align: center;
+  border-top: .2rem solid var(--white);
+}
+
+.admin-edit-profile .footer .credit span {
+  color: var(--blue);
+  text-decoration: underline;
+  letter-spacing: .5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-edit-profile header .fa-bars {
+    display: block;
+  }
+
+  .admin-edit-profile header .navbar {
+    position: fixed;
+    top: -100rem;
+    left: 0;
+    width: 100%;
+    background: var(--white);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .admin-edit-profile header .navbar ul {
+    flex-flow: column;
+    padding: 2rem 0;
+  }
+
+  .admin-edit-profile header .navbar ul li {
+    margin: 1rem 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-edit-profile header .navbar ul li a {
+    font-size: 2rem;
+    display: block;
+    padding: 1rem;
+  }
+
+  .admin-edit-profile header .nav-toggle {
+    top: 5.5rem;
+    opacity: 1;
+  }
+
+  .admin-edit-profile .admin-edit-profile-section {
+    margin: 80px 10px 20px 10px;
+    padding: 15px;
+  }
+
+  .admin-edit-profile .button {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .admin-edit-profile .close-btn {
+    top: 10px;
+    left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-edit-profile .admin-edit-profile-section {
+    margin: 70px 5px 10px 5px;
+    padding: 10px;
+  }
+
+  .admin-edit-profile .profile-form input {
+    font-size: 1.4rem;
+    padding: 10px;
+  }
+
+  .admin-edit-profile .button {
+    height: 4rem;
+    font-size: 1.6rem;
+  }
+}

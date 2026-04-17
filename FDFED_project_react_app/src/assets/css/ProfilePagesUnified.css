@@ -1,0 +1,153 @@
+/* Unified profile/edit theme for Admin, Doctor, Employee, and Supplier pages.
+   Keeps page-specific content intact while matching patient-profile visual language. */
+
+.mq-unified-profile {
+  --mq-primary: #0058be;
+  --mq-surface: #f7f9fb;
+  --mq-surface-low: #f2f4f6;
+  --mq-surface-lowest: #ffffff;
+  --mq-outline: #c2c6d6;
+  --mq-text: #191c1e;
+  --mq-text-muted: #424754;
+  --mq-success: #006947;
+  --mq-danger: #ba1a1a;
+  background: radial-gradient(circle at top right, #eaf2ff 0%, #f7f9fb 40%, #f7f9fb 100%) !important;
+  color: var(--mq-text);
+}
+
+.mq-unified-profile header {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(194, 198, 214, 0.35);
+  border-radius: 14px !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08) !important;
+}
+
+.mq-unified-profile .logo {
+  color: var(--mq-primary) !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.mq-unified-profile .navbar ul li a {
+  color: var(--mq-text-muted) !important;
+}
+
+.mq-unified-profile .navbar ul li a:hover {
+  color: var(--mq-primary) !important;
+}
+
+.mq-unified-profile .container,
+.mq-unified-profile .admin-edit-profile-section,
+.mq-unified-profile .employee-profile,
+.mq-unified-profile .sp-avatar-card,
+.mq-unified-profile .sp-info-card,
+.mq-unified-profile .doctor-edit-profile-container > div,
+.mq-unified-profile #doctor-profile > div,
+.mq-unified-profile .profile-info,
+.mq-unified-profile .registrations {
+  background: var(--mq-surface-lowest) !important;
+  border: 1px solid rgba(194, 198, 214, 0.45) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+.mq-unified-profile .container,
+.mq-unified-profile .admin-edit-profile-section,
+.mq-unified-profile .employee-profile,
+.mq-unified-profile .sp-content {
+  max-width: 1200px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.mq-unified-profile .profile-details h2,
+.mq-unified-profile .registrations h2,
+.mq-unified-profile .sp-info-card-title,
+.mq-unified-profile .sp-section-title h2,
+.mq-unified-profile h1.main-heading,
+.mq-unified-profile h2,
+.mq-unified-profile h3 {
+  color: var(--mq-primary) !important;
+}
+
+.mq-unified-profile .button,
+.mq-unified-profile .sp-btn-primary,
+.mq-unified-profile button[type="submit"] {
+  background: linear-gradient(180deg, #0b7a6f 0%, #095a52 100%) !important;
+  border: 1px solid #095a52 !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+}
+
+.mq-unified-profile .button:hover,
+.mq-unified-profile .sp-btn-primary:hover,
+.mq-unified-profile button[type="submit"]:hover {
+  filter: brightness(1.06);
+}
+
+.mq-unified-profile .sp-btn-ghost {
+  border-radius: 10px !important;
+}
+
+.mq-unified-profile input,
+.mq-unified-profile textarea,
+.mq-unified-profile select,
+.mq-unified-profile .sp-edit-input {
+  background: var(--mq-surface-lowest) !important;
+  border: 1px solid rgba(194, 198, 214, 0.7) !important;
+  border-radius: 10px !important;
+}
+
+.mq-unified-profile input:focus,
+.mq-unified-profile textarea:focus,
+.mq-unified-profile select:focus,
+.mq-unified-profile .sp-edit-input:focus {
+  outline: none;
+  border-color: rgba(0, 88, 190, 0.75) !important;
+  box-shadow: 0 0 0 3px rgba(0, 88, 190, 0.18) !important;
+}
+
+.mq-unified-profile .error-message,
+.mq-unified-profile .sp-form-alert--error {
+  border-radius: 10px !important;
+}
+
+.mq-unified-profile .success-message,
+.mq-unified-profile .sp-form-alert--success {
+  border-radius: 10px !important;
+}
+
+.mq-unified-profile .close-btn {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: var(--mq-text-muted) !important;
+}
+
+.mq-unified-profile .close-btn:hover {
+  background: rgba(186, 26, 26, 0.12) !important;
+  color: var(--mq-danger) !important;
+}
+
+.mq-unified-profile table th {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
+}
+
+.mq-unified-profile table td {
+  color: #1f2937;
+}
+
+@media (max-width: 992px) {
+  .mq-unified-profile .container,
+  .mq-unified-profile .admin-edit-profile-section,
+  .mq-unified-profile .employee-profile,
+  .mq-unified-profile .sp-content {
+    width: 95%;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .mq-unified-profile .profile-layout,
+  .mq-unified-profile .sp-layout {
+    grid-template-columns: 1fr !important;
+  }
+}

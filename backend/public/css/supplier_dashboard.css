@@ -1,0 +1,499 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --blue: #0188df;
+    --black: #444d53;
+    --white: #fff;
+}
+
+* {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    /* text-transform: capitalize; */
+    outline: none;
+    box-sizing: border-box;
+    transition: all linear 0.2s;
+}
+
+html {
+    font-size: 62.5%;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+h3 {
+    font-size: 2rem;
+}
+
+.button {
+    height: 3.5rem;
+    width: 15rem;
+    background: var(--black);
+    color: var(--white);
+    font-size: 1.7rem;
+    /* text-transform: capitalize; */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 1rem auto;
+    border: 0.1rem solid var(--blue);
+    display: block;
+}
+
+.button:hover {
+    border: 0.1rem solid var(--blue);
+    background: var(--white);
+    color: var(--blue);
+    letter-spacing: 0.2rem;
+}
+
+.heading {
+    text-align: center;
+    font-size: 3rem;
+    padding: 1rem;
+    padding-top: 8rem;
+    color: var(--blue);
+    letter-spacing: 0.1rem;
+}
+
+header {
+    width: 96%;
+    background: var(--white);
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translate(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    z-index: 1000;
+    box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
+}
+
+header a {
+    color: var(--black);
+}
+
+header a:hover {
+    color: var(--blue);
+}
+
+header .logo {
+    font-size: 3rem;
+}
+
+header .logo span {
+    color: var(--blue);
+}
+
+header .navbar ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+}
+
+header .navbar ul li {
+    margin: 0 1rem;
+}
+
+header .navbar ul li a {
+    font-size: 2rem;
+    color: var(--black);
+}
+
+header .navbar ul li a:hover {
+    color: var(--blue);
+}
+
+header .fa-bars {
+    font-size: 3rem;
+    color: var(--blue);
+    cursor: pointer;
+    display: none;
+}
+
+.header-active {
+    top: 0;
+    width: 100%;
+    box-shadow: 0.1rem 0.3rem rgba(0, 0, 0, 0.3);
+}
+
+/* Add this to ensure the first block has proper spacing and alignment */
+.main-content {
+    padding-top: 10rem; /* Adjust based on header height */
+    padding-bottom: 4rem; /* Space before footer */
+}
+
+/* Ensure the first block has a clean layout */
+.content-block:first-of-type {
+    margin-top: 2rem; /* Add some space below the header */
+}
+
+/* Style the box-container for the first block */
+.content-block .box-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* Style the individual boxes in the first block */
+.content-block .box-container .box {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    width: 30rem;
+    text-align: center;
+}
+
+.content-block .box-container .box h3 {
+    color: var(--blue);
+    margin-bottom: 1rem;
+}
+
+.content-block .box-container .box p {
+    font-size: 1.5rem;
+    color: var(--black);
+    margin: 0.5rem 0;
+}
+
+.content-block .box-container .box button {
+    margin-top: 1rem;
+    background: var(--black);
+    color: var(--white);
+    border: 0.1rem solid var(--blue);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.content-block .box-container .box button:hover {
+    background: var(--white);
+    color: var(--blue);
+    letter-spacing: 0.1rem;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 12.5%;
+    left: 2%;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    padding: 5px 10px;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.footer {
+    background: var(--black);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2rem 0;
+}
+
+.footer .box {
+    width: 30rem;
+    margin: 2rem;
+    text-align: center;
+}
+
+.footer .box .logo {
+    padding: 2rem 0;
+    font-size: 3rem;
+    color: var(--white);
+}
+
+.footer .box .logo span {
+    color: var(--blue);
+}
+
+.footer .box p {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.footer .box a {
+    color: var(--white);
+    font-size: 2rem;
+    display: block;
+    padding: 0.2rem 0;
+}
+
+.footer .box a:hover {
+    text-decoration: underline;
+}
+
+.footer .credit {
+    width: 85%;
+    padding-top: 1rem;
+    font-size: 2rem;
+    color: var(--white);
+    text-align: center;
+    border-top: 0.2rem solid var(--white);
+}
+
+.footer .credit span {
+    color: var(--blue);
+    text-decoration: underline;
+    letter-spacing: 0.5rem;
+}
+
+table {
+    width: 60%;
+    border-collapse: collapse;
+    margin: 2rem auto;
+    background-color: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--black);
+}
+
+table th {
+    background-color: var(--blue);
+    color: var(--white);
+    font-size: 1.7rem;
+}
+
+table td {
+    font-size: 1.5rem;
+}
+
+/* Form styling */
+/* form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+    background-color: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    width:60%;
+}
+
+form label {
+    font-size: 1.5rem;
+    color: var(--black);
+}
+
+form input {
+    padding: 0.5rem;
+    border: 1px solid var(--black);
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+}
+
+form input[readonly] {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+} */
+
+/* Style for the "Add New Medicine" section */
+#add-medicine {
+    margin-top: 4rem; /* Add space above the section */
+}
+
+#add-medicine .content-block {
+    background: var(--white);
+    padding: 4rem 0;
+}
+
+#add-medicine .box-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 3rem;
+    padding: 2rem;
+}
+
+#add-medicine form {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.3rem 0.5rem rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+}
+
+#add-medicine form input {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--black);
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--black);
+}
+
+#add-medicine form input:focus {
+    border-color: var(--blue);
+    outline: none;
+}
+
+#add-medicine form button {
+    width: 100%;
+    padding: 1rem;
+    background: var(--black);
+    color: var(--white);
+    border: 0.1rem solid var(--blue);
+    border-radius: 0.5rem;
+    font-size: 1.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#add-medicine form button:hover {
+    background: var(--white);
+    color: var(--blue);
+    letter-spacing: 0.1rem;
+}
+
+/* Button styling */
+.button,
+.approve-btn,
+.generate-btn {
+    height: 3.5rem;
+    width: 15rem;
+    background: var(--black);
+    color: var(--white);
+    font-size: 1.7rem;
+    /* text-transform: capitalize; */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 1rem auto;
+    border: 0.1rem solid var(--blue);
+    display: block;
+}
+
+.button:hover,
+.approve-btn:hover,
+.generate-btn:hover {
+    border: 0.1rem solid var(--blue);
+    background: var(--white);
+    color: var(--blue);
+    letter-spacing: 0.2rem;
+}
+
+/* File upload and view PDF link styling */
+.upload-pdf {
+    font-size: 1.5rem;
+    color: var(--black);
+}
+
+.view-pdf {
+    font-size: 1.5rem;
+    color: var(--blue);
+    text-decoration: none;
+}
+
+.view-pdf:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 55%;
+    }
+
+    header .fa-bars {
+        display: block;
+    }
+
+    header .navbar {
+        position: fixed;
+        top: -100rem;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        opacity: 0;
+    }
+
+    header .navbar ul {
+        flex-flow: column;
+        padding: 2rem 0;
+    }
+
+    header .navbar ul li {
+        margin: 1rem 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    header .navbar ul li a {
+        font-size: 2rem;
+        display: block;
+    }
+
+    header .nav-toggle {
+        top: 5.5rem;
+        opacity: 1;
+    }
+
+    .about .box-container .box {
+        width: 90%;
+    }
+
+    .chart-container {
+        max-width: 100%;
+    }
+    table{
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    table th,
+    table td {
+        padding: 0.5rem;
+        font-size: 1.4rem;
+    }
+
+    form {
+        padding: 1rem;
+        width:90%;
+    }
+
+    .button,
+    .approve-btn,
+    .generate-btn {
+        width: 100%;
+    }
+}

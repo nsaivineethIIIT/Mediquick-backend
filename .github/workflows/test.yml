@@ -1,0 +1,150 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, develop, vineeth ]
+  pull_request:
+    branches: [ main, develop, vineeth ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        options: >-
+          --health-cmd mongosh --eval "db.adminCommand('ping')"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin123
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: Run unit tests
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test-secret-key
+        SMTP_USER: test@test.com
+        SMTP_PASS: test-password
+      run: npm test
+
+    - name: Run auth tests
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test-secret-key
+        SMTP_USER: test@test.com
+        SMTP_PASS: test-password
+      run: npm run test:auth
+
+    - name: Run appointment tests
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test-secret-key
+        SMTP_USER: test@test.com
+        SMTP_PASS: test-password
+      run: npm run test:appointment
+
+    - name: Run medicine tests
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test-secret-key
+        SMTP_USER: test@test.com
+        SMTP_PASS: test-password
+      run: npm run test:medicine
+
+    - name: Run admin tests
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test-secret-key
+        SMTP_USER: test@test.com
+        SMTP_PASS: test-password
+      run: npm run test:admin
+
+    - name: Generate coverage report
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: test-secret-key
+        SMTP_USER: test@test.com
+        SMTP_PASS: test-password
+      run: npm run test:coverage
+      continue-on-error: true
+
+    - name: Upload coverage to CodeCov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./backend/coverage/lcov.info
+      continue-on-error: true
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: FDFED_project_react_app/package-lock.json
+
+    - name: Install frontend dependencies
+      working-directory: ./FDFED_project_react_app
+      run: npm ci
+
+    - name: Run ESLint
+      working-directory: ./FDFED_project_react_app
+      run: npm run lint
+      continue-on-error: true
