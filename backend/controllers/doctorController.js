@@ -219,7 +219,7 @@ exports.signup = asyncHandler(async (req, res) => {
         });
     }
 
-    // Multer already saved the file — store its path for use after OTP verify
+    // Multer already saved the file to Cloudinary — store its path for use after OTP verify
     const signupData = {
         name: name.trim(),
         email: email.trim().toLowerCase(),
@@ -232,7 +232,8 @@ exports.signup = asyncHandler(async (req, res) => {
         location: location.trim(),
         onlineStatus: onlineStatus.trim(),
         password,
-        documentPath: req.file ? `/uploads/${req.file.filename}` : null,
+        documentPath: req.file ? req.file.path : null, // Cloudinary URL
+        documentOriginalName: req.file ? req.file.originalname : null, // Store original filename
         consultationFee: fee,
         ...(dateOfBirth && { dateOfBirth }),
         ...(gender && { gender: gender.toLowerCase() })
@@ -975,15 +976,11 @@ exports.removeProfilePhoto = asyncHandler(async (req, res) => {
 
         
         try {
-            const oldProfilePhoto = doctorBefore && doctorBefore.profilePhoto;
-            if (oldProfilePhoto && oldProfilePhoto.startsWith('/uploads/profiles/')) {
-                const filePath = path.join(process.cwd(), 'public', oldProfilePhoto.replace(/^\//, ''));
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath);
-                }
-            }
+            // Cloudinary URLs don't need manual deletion handling
+            // Cloudinary manages storage automatically
+            // Old file cleanup happens automatically in Cloudinary
         } catch (err) {
-            console.error('Failed to cleanup old doctor profile photo file:', err.message);
+            console.error('Error during cleanup:', err.message);
         }
 
         res.status(200).json({
@@ -1110,9 +1107,9 @@ exports.updateProfile = asyncHandler(async (req, res) => {
             updateData.gender = gender.toLowerCase();
         }
 
-        // handle profile photo file if uploaded (uploadProfile stores in public/uploads/profiles)
-        if (req.file && req.file.filename) {
-            updateData.profilePhoto = '/uploads/profiles/' + req.file.filename;
+        // handle profile photo file if uploaded (uploadProfile stores in Cloudinary)
+        if (req.file && req.file.path) {
+            updateData.profilePhoto = req.file.path; // Cloudinary URL
         }
 
         if (removeProfilePhoto === 'on' || removeProfilePhoto === 'true') {

@@ -1,22 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const chatController = require('../controllers/chatController');
-const { verifyTokenAndSetUser } = require('../middlewares/auth');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-
-const storageChat = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const dir = path.join(__dirname, '../public/uploads/chat');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-const uploadChat = multer({ storage: storageChat });
+const chatController = require('../controllers/chatController');
+const { verifyTokenAndSetUser } = require('../middlewares/auth');
+const { uploadChat } = require('../middlewares/upload');
 
 /**
  * @swagger
@@ -310,12 +298,43 @@ router.post('/send-file', verifyTokenAndSetUser, uploadChat.single('file'), chat
  *               type: string
  *               example: "File not found"
  */
-router.get('/download/:filename', (req, res) => {
-    const filePath = path.join(__dirname, '../public/uploads/chat', req.params.filename);
-    if (fs.existsSync(filePath)) {
-        res.download(filePath);
-    } else {
+router.get('/download/*', async (req, res) => {
+    try {
+        const filename = req.params[0]; // Captures full path including subdirectories
+        
+        // First, check if it's a local file (backward compatibility)
+        const filePath = path.join(__dirname, '../public/uploads/chat', filename);
+        if (fs.existsSync(filePath)) {
+            return res.download(filePath);
+        }
+        
+        // Search database by public ID or originalFileName
+        const Chat = require('../models/Chat');
+        const chatMessage = await Chat.findOne({ 
+            $or: [
+                { public_id: filename },
+                { originalFileName: filename }
+            ]
+        });
+        
+        if (!chatMessage || !chatMessage.filePath) {
+            return res.status(404).send('File not found');
+        }
+        
+        // If it's a Cloudinary URL, redirect to it
+        if (chatMessage.filePath.startsWith('http')) {
+            return res.redirect(chatMessage.filePath);
+        }
+        
+        // Try as local path (old format)
+        if (fs.existsSync(chatMessage.filePath)) {
+            return res.download(chatMessage.filePath);
+        }
+        
         res.status(404).send('File not found');
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -425,5 +444,46 @@ router.get('/download/:filename', (req, res) => {
  *         description: Internal server error
  */
 router.get('/:appointmentId', verifyTokenAndSetUser, chatController.getChat);
+
+/**
+ * Proxy endpoint to serve Cloudinary files with authentication
+ * Handles both public and private Cloudinary files
+ */
+router.get('/proxy-file', (req, res) => {
+    try {
+        const { url } = req.query;
+        
+        if (!url) {
+            return res.status(400).json({ error: 'URL parameter required' });
+        }
+        
+        // For local URLs, serve from disk
+        if (!url.startsWith('http')) {
+            const localPath = path.join(__dirname, '../public', url);
+            if (fs.existsSync(localPath)) {
+                return res.sendFile(localPath);
+            }
+        }
+        
+        // For Cloudinary URLs, make authenticated request and stream the response
+        if (url.startsWith('https://res.cloudinary.com')) {
+            const https = require('https');
+            https.get(url, (response) => {
+                // Pass through the response headers and stream
+                res.set('Content-Type', response.headers['content-type']);
+                res.set('Content-Length', response.headers['content-length']);
+                response.pipe(res);
+            }).on('error', (error) => {
+                console.error('Error fetching from Cloudinary:', error);
+                res.status(500).json({ error: 'Error fetching file' });
+            });
+        } else {
+            res.status(400).json({ error: 'Invalid URL' });
+        }
+    } catch (error) {
+        console.error('Error in proxy:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;

@@ -2,12 +2,9 @@ const express = require('express');
 const router = express.Router();
 const supplierController = require('../controllers/supplierController');
 const Supplier = require('../models/Supplier');
-const { uploadProfile, uploadMedicine, uploadDocument } = require('../middlewares/upload');
+const { uploadProfile, uploadMedicine, uploadDocument, uploadSignup } = require('../middlewares/upload');
 const { verifySupplier } = require('../middlewares/auth');
 const asyncHandler = require('../middlewares/asyncHandler');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 /**
  * @swagger
@@ -563,53 +560,15 @@ const fs = require('fs');
  *         description: Internal server error
  */
 
-// Configure multer to handle both profile photo and document with separate storage
-const combinedStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        let dir;
-        if (file.fieldname === 'profilePhoto') {
-            dir = path.join(__dirname, '..', 'uploads', 'profiles');
-        } else if (file.fieldname === 'document') {
-            dir = path.join(__dirname, '..', 'uploads', 'documents');
-        }
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-
-const uploadFields = multer({ 
-    storage: combinedStorage,
-    limits: { fileSize: 10 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        if (file.fieldname === 'profilePhoto') {
-            const allowedTypes = /jpeg|jpg|png|gif/;
-            const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-            const mimetype = allowedTypes.test(file.mimetype);
-            if (extname && mimetype) {
-                return cb(null, true);
-            }
-            cb(new Error('Only image files are allowed for profile photos'));
-        } else if (file.fieldname === 'document') {
-            const allowedTypes = /pdf|jpeg|jpg|png/;
-            const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-            const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/pdf';
-            if (extname || mimetype) {
-                return cb(null, true);
-            }
-            cb(new Error('Only PDF and image files are allowed for documents'));
-        }
-    }
-}).fields([
-    { name: 'profilePhoto', maxCount: 1 },
-    { name: 'document', maxCount: 1 }
-]);
+// Configure multer to handle both profile photo and document with Cloudinary
+// This uses uploadSignup from the upload middleware
 
 router.get('/dashboard', verifySupplier, supplierController.getDashboard);
 router.get('/form', supplierController.getForm);
-router.post('/signup', uploadFields, supplierController.signup);
+router.post('/signup', uploadSignup.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
+]), supplierController.signup);
 router.post('/login', supplierController.login);
 router.get('/profile', verifySupplier, supplierController.getProfile);
 router.get('/edit-profile', verifySupplier, supplierController.editProfile);

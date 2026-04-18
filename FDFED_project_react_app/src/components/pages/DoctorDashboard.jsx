@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useDoctor } from '../../context/DoctorContext';
 import { getToken, removeToken } from '../../utils/authUtils';
 import DoctorLayoutShell from '../common/DoctorLayoutShell';
+import ChatFileDisplay from '../common/ChatFileDisplay';
 
 const DoctorDashboard = () => {
   const { doctor } = useDoctor();
@@ -854,17 +855,7 @@ const DoctorDashboard = () => {
                   className={`doctor-message ${msg.senderType === 'doctor' ? 'sent' : 'received'}`}
                 >
                   {msg.isFile ? (
-                    (() => {
-                      const API = import.meta.env.VITE_API_URL;
-                      return (
-                        <a
-                          href={`${API}/chat/download/${msg.fileName}`}
-                          style={{ color: 'inherit', textDecoration: 'none' }}
-                        >
-                          📎 {msg.fileName} (Download)
-                        </a>
-                      );
-                    })()
+                    <ChatFileDisplay fileUrl={msg.filePath || (import.meta.env.VITE_API_URL + '/chat/download/' + msg.fileName)} fileName={msg.originalFileName || msg.fileName} isWhiteText={msg.senderType === 'doctor'} />
                   ) : (
                     msg.message
                   )}
@@ -925,13 +916,21 @@ const DoctorDashboard = () => {
               </label>
               {notesFiles.length > 0 ? (
                 <div className="notes-files-list">
-                  {notesFiles.map((file, index) => (
+                  {notesFiles.map((file, index) => {
+                    // Get file URL - supports both Cloudinary URLs and legacy local paths
+                    const getFileUrl = () => {
+                      if (file.path && file.path.startsWith('http')) return file.path; // Cloudinary URL
+                      if (file.filename) {
+                        const API = import.meta.env.VITE_API_URL;
+                        return `${API}/uploads/doctorNotes/${file.filename}`; // Legacy local path
+                      }
+                      return '#';
+                    };
+                    
+                    return (
                     <div key={file._id || index} className="notes-file-item">
                       <a 
-                        href={(() => {
-                          const API = import.meta.env.VITE_API_URL;
-                          return `${API}/uploads/doctorNotes/${file.filename}`;
-                        })()}
+                        href={getFileUrl()}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="notes-file-link"
@@ -945,7 +944,8 @@ const DoctorDashboard = () => {
                         Delete
                       </button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="notes-empty">No files attached</p>

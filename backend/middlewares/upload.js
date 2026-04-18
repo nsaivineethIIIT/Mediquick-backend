@@ -1,123 +1,32 @@
-const path = require('path');
-const fs = require('fs');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-
-const generalStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const dir = path.join(process.cwd(), 'FFSD Project Final', 'Uploads');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const upload = multer({ storage: generalStorage });
-
-// Blog image uploads to public/uploads
-// const blogStorage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         const dir = path.join(process.cwd(), 'FFSD Project Final', 'public', 'uploads');
-//         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-//         cb(null, dir);
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, Date.now() + path.extname(file.originalname));
-//     }
-// });
-
-// const uploadBlog = multer({
-//     storage: blogStorage,
-//     limits: { fileSize: 5 * 1024 * 1024 },
-//     fileFilter: (req, file, cb) => {
-//         const filetypes = /jpeg|jpg|png|gif/;
-//         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//         const mimetype = filetypes.test(file.mimetype);
-//         if (extname && mimetype) {
-//             return cb(null, true);
-//         }
-//         cb(new Error('Only images are allowed (jpeg, jpg, png, gif)'));
-//     }
-// });
-
-const blogStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(process.cwd(), 'public', 'uploads');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const uploadBlog = multer({
-    storage: blogStorage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const filetypes = /jpeg|jpg|png|gif/;
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = filetypes.test(file.mimetype);
-        if (extname && mimetype) {
-            return cb(null, true);
-        }
-        const error = new Error('Only images are allowed (jpeg, jpg, png, gif)');
-        error.status = 400;
-        error.type = 'file_validation_error';
-        cb(error);
-    }
-});
-
-// Medicine image uploads to public/uploads/medicines
-const medicineStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'public', 'uploads', 'medicines');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const uploadMedicine = multer({
-    storage: medicineStorage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for medicine images
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-        if (extname && mimetype) {
-            return cb(null, true);
-        }
-        const error = new Error('Only image files are allowed for medicine images');
-        error.status = 400;
-        error.type = 'file_validation_error';
-        cb(error);
-    }
-});
-
-// Profile photo uploads to backend/uploads/profiles
-const profileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'uploads', 'profiles');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+// ============= PROFILE PHOTO UPLOADS =============
+// For doctor, patient, employee, supplier profile photos
+const profileStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/profiles',
+        resource_type: 'auto',
+        type: 'upload', // Public upload
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif']
     }
 });
 
 const uploadProfile = multer({
     storage: profileStorage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for profile photos
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
-        // Allow only images
         const allowedTypes = /jpeg|jpg|png|gif/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const extname = allowedTypes.test(file.originalname.toLowerCase());
         const mimetype = allowedTypes.test(file.mimetype);
         
         if (extname && mimetype) {
@@ -129,59 +38,29 @@ const uploadProfile = multer({
         cb(error);
     }
 });
-// Chat file uploads to public/uploads/chat
-const chatStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'public', 'uploads', 'chat');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
 
-const uploadChat = multer({
-    storage: chatStorage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for chat files
-    fileFilter: (req, file, cb) => {
-        // Allow PDFs, images, and common document types
-        const allowedTypes = /pdf|jpeg|jpg|png|gif|doc|docx|txt/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/pdf';
-        
-        if (extname || mimetype) {
-            return cb(null, true);
-        }
-        const error = new Error('Only PDF, images, and common document types are allowed');
-        error.status = 400;
-        error.type = 'file_validation_error';
-        cb(error);
-    }
-});
-
-// Document uploads for employee and supplier verification
-const documentStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'uploads', 'documents');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+// ============= DOCUMENT UPLOADS =============
+// For doctor signup, supplier signup, employee verification documents
+const documentStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/documents',
+        resource_type: 'auto',
+        type: 'upload', // Public upload
+        allowed_formats: ['pdf', 'jpg', 'jpeg', 'png']
     }
 });
 
 const uploadDocument = multer({
     storage: documentStorage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for documents
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: (req, file, cb) => {
-        // Allow PDFs and images for documents
         const allowedTypes = /pdf|jpeg|jpg|png/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/pdf';
+        const extname = allowedTypes.test(file.originalname.toLowerCase());
+        const isPdf = file.mimetype === 'application/pdf';
+        const isImage = allowedTypes.test(file.mimetype);
         
-        if (extname || mimetype) {
+        if (extname && (isPdf || isImage)) {
             return cb(null, true);
         }
         const error = new Error('Only PDF and image files are allowed for documents');
@@ -191,28 +70,28 @@ const uploadDocument = multer({
     }
 });
 
-// Doctor notes uploads to uploads/doctorNotes
-const doctorNotesStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'uploads', 'doctorNotes');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+// ============= CHAT FILE UPLOADS =============
+// For doctor-patient chat files
+const chatStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/chat',
+        resource_type: 'auto',
+        type: 'upload' // Public upload (not signed)
     }
 });
 
-const uploadDoctorNotes = multer({
-    storage: doctorNotesStorage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for doctor notes files
+const uploadChat = multer({
+    storage: chatStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: (req, file, cb) => {
-        // Allow PDFs, images, and common document types
         const allowedTypes = /pdf|jpeg|jpg|png|gif|doc|docx|txt/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'application/pdf';
+        const extname = allowedTypes.test(file.originalname.toLowerCase());
+        const isPdf = file.mimetype === 'application/pdf';
+        const isImage = /jpeg|jpg|png|gif/.test(file.mimetype);
+        const isDoc = /word|msword|document/.test(file.mimetype) || /doc|docx|txt/.test(file.originalname.toLowerCase());
         
-        if (extname || mimetype) {
+        if (extname && (isPdf || isImage || isDoc)) {
             return cb(null, true);
         }
         const error = new Error('Only PDF, images, and common document types are allowed');
@@ -222,7 +101,196 @@ const uploadDoctorNotes = multer({
     }
 });
 
-module.exports = { upload, uploadBlog, uploadChat, uploadProfile, uploadMedicine, uploadDocument, uploadDoctorNotes };
+// ============= DOCTOR NOTES UPLOADS =============
+// For appointment notes and medical records
+const doctorNotesStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/doctorNotes',
+        resource_type: 'auto',
+        type: 'upload' // Public upload
+    }
+});
+
+const uploadDoctorNotes = multer({
+    storage: doctorNotesStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /pdf|jpeg|jpg|png|gif|doc|docx|txt/;
+        const extname = allowedTypes.test(file.originalname.toLowerCase());
+        const isPdf = file.mimetype === 'application/pdf';
+        const isImage = /jpeg|jpg|png|gif/.test(file.mimetype);
+        const isDoc = /word|msword|document/.test(file.mimetype) || /doc|docx|txt/.test(file.originalname.toLowerCase());
+        
+        if (extname && (isPdf || isImage || isDoc)) {
+            return cb(null, true);
+        }
+        const error = new Error('Only PDF, images, and common document types are allowed');
+        error.status = 400;
+        error.type = 'file_validation_error';
+        cb(error);
+    }
+});
+
+// ============= BLOG IMAGE UPLOADS =============
+// For blog posts
+const blogStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/blog',
+        resource_type: 'auto',
+        type: 'upload', // Public upload
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif']
+    }
+});
+
+const uploadBlog = multer({
+    storage: blogStorage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif/;
+        const extname = allowedTypes.test(file.originalname.toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        if (extname && mimetype) {
+            return cb(null, true);
+        }
+        const error = new Error('Only images are allowed (jpeg, jpg, png, gif)');
+        error.status = 400;
+        error.type = 'file_validation_error';
+        cb(error);
+    }
+});
+
+// ============= MEDICINE IMAGE UPLOADS =============
+// For medicine/product images
+const medicineStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/medicines',
+        type: 'upload', // Public upload
+        resource_type: 'auto',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif']
+    }
+});
+
+const uploadMedicine = multer({
+    storage: medicineStorage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif/;
+        const extname = allowedTypes.test(file.originalname.toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        if (extname && mimetype) {
+            return cb(null, true);
+        }
+        const error = new Error('Only image files are allowed for medicine images');
+        error.status = 400;
+        error.type = 'file_validation_error';
+        cb(error);
+    }
+});
+
+// ============= GENERAL UPLOADS =============
+// Fallback for any general uploads
+const generalStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'mediquick/uploads',
+        resource_type: 'auto',
+        type: 'upload' // Public upload
+    }
+});
+
+const upload = multer({
+    storage: generalStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+// ============= COMBINED SIGNUP STORAGE (CLOUDINARY) =============
+// For supplier and employee signup with both profile photo and document
+const signupStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+        // Route profile photos to profiles folder, documents to documents folder
+        let folder = 'mediquick/uploads';
+        let allowed_formats = ['pdf', 'jpg', 'jpeg', 'png', 'gif'];
+        
+        if (file.fieldname === 'profilePhoto') {
+            folder = 'mediquick/profiles';
+            allowed_formats = ['jpg', 'jpeg', 'png', 'gif'];
+        } else if (file.fieldname === 'document') {
+            folder = 'mediquick/documents';
+            allowed_formats = ['pdf', 'jpg', 'jpeg', 'png'];
+        }
+        
+        return {
+            folder: folder,
+            resource_type: 'auto',
+            type: 'upload',
+            allowed_formats: allowed_formats
+        };
+    }
+});
+
+const uploadSignup = multer({
+    storage: signupStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+        if (file.fieldname === 'profilePhoto') {
+            const allowedTypes = /jpeg|jpg|png|gif/;
+            const extname = allowedTypes.test(file.originalname.toLowerCase());
+            const mimetype = allowedTypes.test(file.mimetype);
+            
+            if (extname && mimetype) {
+                return cb(null, true);
+            }
+            const error = new Error('Only image files are allowed for profile photos');
+            error.status = 400;
+            cb(error);
+        } else if (file.fieldname === 'document') {
+            const allowedTypes = /pdf|jpeg|jpg|png/;
+            const extname = allowedTypes.test(file.originalname.toLowerCase());
+            const isPdf = file.mimetype === 'application/pdf';
+            const isImage = allowedTypes.test(file.mimetype);
+            
+            if (extname && (isPdf || isImage)) {
+                return cb(null, true);
+            }
+            const error = new Error('Only PDF and image files are allowed for documents');
+            error.status = 400;
+            cb(error);
+        }
+    }
+});
+
+// Helper function to convert Cloudinary path to proper full URL
+const getCloudinaryUrl = (path, filename) => {
+    if (!path) return null;
+    
+    // If already a full URL, return as-is
+    if (path.startsWith('http')) {
+        return path;
+    }
+    
+    // If it's just a public_id, construct the full URL
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const ext = filename ? filename.split('.').pop().toLowerCase() : 'pdf';
+    
+    // Ensure proper format for download
+    return `https://res.cloudinary.com/${cloudName}/image/upload/${path}.${ext}`;
+};
+
+module.exports = { 
+    upload, 
+    uploadBlog, 
+    uploadChat, 
+    uploadProfile, 
+    uploadMedicine, 
+    uploadDocument, 
+    uploadDoctorNotes,
+    uploadSignup,
+    getCloudinaryUrl 
+};
 
 
 

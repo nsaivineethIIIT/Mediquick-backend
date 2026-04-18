@@ -168,7 +168,7 @@ exports.postSubmit = asyncHandler(async (req, res) => {
 
         // Process uploaded files
         if (req.files && req.files.length > 0) {
-            images = req.files.map(file => `/uploads/${file.filename}`);
+            images = req.files.map(file => file.path); // Cloudinary URLs
         }
 
         // Process image URLs if provided

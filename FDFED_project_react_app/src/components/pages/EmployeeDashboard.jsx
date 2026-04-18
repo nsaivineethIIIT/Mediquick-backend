@@ -27,42 +27,32 @@ const EmployeeDashboard = () => {
   const [activeSection, setActiveSection] = useState('pendingDoctors');
   const navigate = useNavigate();
 
-  // Function to view document
-  const viewDocument = async (documentPath) => {
+  // Function to download document directly from Cloudinary
+  const downloadDocument = (documentPath) => {
     if (!documentPath) {
       alert('No document available');
       return;
     }
     
-    // Construct the full URL
-    const documentUrl = `${BASE_URL}${documentPath}`;
-    console.log('=== VIEW DOCUMENT DEBUG ===');
-    console.log('Document path received:', documentPath);
-    console.log('Full URL constructed:', documentUrl);
-    console.log('BASE_URL:', BASE_URL);
-    console.log('========================');
-    
     try {
-      // First, check if the document exists by making a HEAD request
-      const response = await fetch(documentUrl, { method: 'HEAD' });
+      // Add download parameter to Cloudinary URL to force download
+      const downloadUrl = documentPath.includes('?') 
+        ? `${documentPath}&dl=1` 
+        : `${documentPath}?dl=1`;
       
-      console.log('HEAD request response:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok
-      });
+      console.log('Downloading from:', downloadUrl);
       
-      if (response.ok) {
-        // Document exists, open it in a new tab
-        window.open(documentUrl, '_blank', 'noopener,noreferrer');
-      } else {
-        console.error('Document not accessible:', response.status);
-        alert(`Document not found or not accessible (Status: ${response.status}). Please contact support.`);
-      }
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', '');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
-      console.error('Error accessing document:', error);
-      // If HEAD request fails, try opening anyway (might be CORS issue with HEAD)
-      window.open(documentUrl, '_blank', 'noopener,noreferrer');
+      console.error('Error downloading document:', error);
+      // Fallback: open in new tab
+      window.open(documentPath, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -858,16 +848,17 @@ const EmployeeDashboard = () => {
                     {doctor.documentPath ? (
                       <button
                         className="view-doc-link"
-                        onClick={() => viewDocument(doctor.documentPath)}
+                        onClick={() => downloadDocument(doctor.documentPath)}
                         style={{
                           background: 'none',
                           border: 'none',
                           cursor: 'pointer',
                           padding: 0,
-                          font: 'inherit'
+                          font: 'inherit',
+                          color: '#28a745'
                         }}
                       >
-                        <i className="fas fa-file-pdf"></i> View Document
+                        <i className="fas fa-download"></i> Download
                       </button>
                     ) : (
                       <span className="no-document">No document</span>
@@ -969,19 +960,36 @@ const EmployeeDashboard = () => {
                   <td>{supplier.mobile}</td>
                   <td>
                     {supplier.profilePhoto ? (
-                      <button
-                        className="view-doc-link"
-                        onClick={() => viewDocument(supplier.profilePhoto)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                          font: 'inherit'
-                        }}
-                      >
-                        <i className="fas fa-image"></i> View Photo
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          className="view-doc-link"
+                          onClick={() => previewDocument(supplier.profilePhoto)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            font: 'inherit',
+                            color: '#007bff'
+                          }}
+                        >
+                          <i className="fas fa-eye"></i> Preview
+                        </button>
+                        <button
+                          className="view-doc-link"
+                          onClick={() => viewDocument(supplier.profilePhoto)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            font: 'inherit',
+                            color: '#28a745'
+                          }}
+                        >
+                          <i className="fas fa-download"></i> Download
+                        </button>
+                      </div>
                     ) : (
                       <span className="no-document">No photo</span>
                     )}
@@ -990,16 +998,17 @@ const EmployeeDashboard = () => {
                     {supplier.documentPath ? (
                       <button
                         className="view-doc-link"
-                        onClick={() => viewDocument(supplier.documentPath)}
+                        onClick={() => downloadDocument(supplier.documentPath)}
                         style={{
                           background: 'none',
                           border: 'none',
                           cursor: 'pointer',
                           padding: 0,
-                          font: 'inherit'
+                          font: 'inherit',
+                          color: '#28a745'
                         }}
                       >
-                        <i className="fas fa-file-pdf"></i> View Document
+                        <i className="fas fa-download"></i> Download
                       </button>
                     ) : (
                       <span className="no-document">No document</span>
@@ -1323,8 +1332,9 @@ const EmployeeDashboard = () => {
         </table>
         </section>
         )}
-      </div>
+
       <Footer />
+    </div>
     </div>
   );
 };

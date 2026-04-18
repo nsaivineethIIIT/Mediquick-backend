@@ -1685,7 +1685,7 @@ const AdminDashboard = () => {
                           <td>
                             {employee.profilePhoto ? (
                               <a 
-                                href={`${BASE_URL}${employee.profilePhoto}`} 
+                                href={employee.profilePhoto.startsWith('http') ? employee.profilePhoto : `${BASE_URL}${employee.profilePhoto}`} 
                                 className="view-pdf" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
@@ -1699,7 +1699,7 @@ const AdminDashboard = () => {
                           <td>
                             {employee.documentPath ? (
                               <a 
-                                href={`${BASE_URL}${employee.documentPath}`} 
+                                href={employee.documentPath.startsWith('http') ? employee.documentPath : `${BASE_URL}${employee.documentPath}`} 
                                 className="view-pdf" 
                                 target="_blank" 
                                 rel="noopener noreferrer"

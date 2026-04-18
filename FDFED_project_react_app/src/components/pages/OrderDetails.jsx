@@ -138,12 +138,20 @@ const OrderDetails = () => {
                     <div className="order-card">
                         <h4 className="section-title">Order Items</h4>
                         <div className="order-items-container">
-                            {orderDetails.items?.map((item, index) => (
+                            {orderDetails.items?.map((item, index) => {
+                                // Get medicine image URL - supports both Cloudinary URLs and legacy local paths
+                                const getMedicineImageUrl = () => {
+                                  if (!item.medicine?.image) return null;
+                                  if (item.medicine.image.startsWith('http')) return item.medicine.image; // Cloudinary URL
+                                  return `/uploads/medicines/${item.medicine.image}`; // Legacy local path
+                                };
+                                
+                                return (
                                 <div key={index} className="order-item">
                                     <div className="order-item-info">
                                         {item.medicine?.image && (
                                             <div className="medicine-image">
-                                                <img src={`/uploads/medicines/${item.medicine.image}`} alt={item.medicineName} />
+                                                <img src={getMedicineImageUrl()} alt={item.medicineName} />
                                             </div>
                                         )}
                                         <div className="medicine-details">
@@ -156,7 +164,8 @@ const OrderDetails = () => {
                                         <strong className="total-price">₹{item.total.toFixed(2)}</strong>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}  
                         </div>
                     </div>
 

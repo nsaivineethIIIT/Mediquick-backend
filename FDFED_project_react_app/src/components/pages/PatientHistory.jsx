@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getToken, removeToken } from '../../utils/authUtils';
 import '../../assets/css/DoctorDashboardModern.css';
 import DoctorLayoutShell from '../common/DoctorLayoutShell';
+import ChatFileDisplay from '../common/ChatFileDisplay';
 
 const PatientHistory = () => {
   const navigate = useNavigate();
@@ -271,10 +272,21 @@ const PatientHistory = () => {
                               <p style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '5px' }}>
                                 Attached Files:
                               </p>
-                              {appointment.doctorNotes.files.map((file, idx) => (
+                              {appointment.doctorNotes.files.map((file, idx) => {
+                                // Get file URL - supports both Cloudinary URLs and legacy local paths
+                                const getFileUrl = () => {
+                                  if (file.path && file.path.startsWith('http')) return file.path; // Cloudinary URL
+                                  if (file.filename) {
+                                    const API = import.meta.env.VITE_API_URL;
+                                    return `${API}/uploads/doctorNotes/${file.filename}`; // Legacy local path
+                                  }
+                                  return '#';
+                                };
+                                
+                                return (
                                 <div key={idx} style={{ marginBottom: '5px' }}>
                                   <a 
-                                    href={`${import.meta.env.VITE_API_URL}/uploads/doctorNotes/${file.filename}`}
+                                    href={getFileUrl()}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{ fontSize: '1.3rem', color: '#0188df' }}
@@ -282,7 +294,8 @@ const PatientHistory = () => {
                                     📎 {file.originalName}
                                   </a>
                                 </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           )}
                         </div>
@@ -381,14 +394,7 @@ const PatientHistory = () => {
                                   <span>{formatTimestamp(msg.timestamp)}</span>
                                 </div>
                                 {msg.isFile ? (
-                                  <a
-                                    href={`${import.meta.env.VITE_API_URL}/chat/download/${msg.fileName}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ fontSize: '1.4rem', color: '#0188df' }}
-                                  >
-                                    📎 {msg.originalFileName || msg.fileName} (Download)
-                                  </a>
+                                  <ChatFileDisplay fileUrl={msg.filePath || (import.meta.env.VITE_API_URL + '/chat/download/' + msg.fileName)} fileName={msg.originalFileName || msg.fileName} isWhiteText={false} />
                                 ) : (
                                   <p style={{ fontSize: '1.4rem', color: '#444d53', margin: 0 }}>
                                     {msg.message}

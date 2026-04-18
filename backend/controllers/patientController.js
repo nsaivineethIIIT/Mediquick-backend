@@ -789,7 +789,7 @@ exports.uploadProfilePhoto = asyncHandler(async (req, res) => {
 
         const patientBefore = await Patient.findById(req.patientId).lean();
         const updateData = {
-            profilePhoto: '/uploads/profiles/' + req.file.filename
+            profilePhoto: req.file.path // Cloudinary URL
         };
 
         const updatedPatient = await Patient.findByIdAndUpdate(
@@ -973,9 +973,9 @@ exports.updateProfile = asyncHandler(async (req, res) => {
             updateData.gender = gender.toLowerCase();
         }
 
-        // Handle profile photo upload (file saved by uploadProfile middleware into public/uploads/profiles)
-        if (req.file && req.file.filename) {
-            updateData.profilePhoto = '/uploads/profiles/' + req.file.filename;
+        // Handle profile photo upload (file saved by uploadProfile middleware to Cloudinary)
+        if (req.file && req.file.path) {
+            updateData.profilePhoto = req.file.path; // Cloudinary URL
         }
 
         // If user requested to remove profile photo, set to default
@@ -1038,8 +1038,8 @@ exports.uploadAvatar = asyncHandler(async (req, res) => {
         if (!req.patientId) return res.status(401).json({ error: 'Unauthorized' });
         const patientBefore = await Patient.findById(req.patientId).lean();
         const updateData = {};
-        if (req.file && req.file.filename) {
-            updateData.avatar = '/uploads/' + req.file.filename;
+        if (req.file && req.file.path) {
+            updateData.avatar = req.file.path; // Cloudinary URL
         }
         const updatedPatient = await Patient.findByIdAndUpdate(req.patientId, updateData, { new: true });
         // cleanup old file

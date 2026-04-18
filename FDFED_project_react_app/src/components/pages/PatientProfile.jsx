@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { usePatient } from '../../context/PatientContext';
 import { getToken, removeToken } from '../../utils/authUtils';
 import { fetchPatientAppointments, cancelAppointment } from '../../store/slices/appointmentSlice';
+import ChatFileDisplay from '../common/ChatFileDisplay';
 import '../../assets/css/PatientDashboard.css';
 
 const statusBadgeClass = (status = '') => {
@@ -612,9 +613,7 @@ const PatientProfile = () => {
               {chatModal.messages.map((message, index) => (
                 <div key={`${message.createdAt || index}-${index}`} className={`mb-2 max-w-[80%] rounded-xl px-3 py-2 text-sm ${message.senderType === 'patient' ? 'ml-auto bg-blue-700 text-white' : 'bg-white text-slate-800 border border-slate-200'}`}>
                   {message.isFile ? (
-                    <a href={`${import.meta.env.VITE_API_URL}/chat/download/${message.fileName}`} className="underline">
-                      {message.fileName} (Download)
-                    </a>
+                    <ChatFileDisplay fileUrl={message.filePath || (import.meta.env.VITE_API_URL + '/chat/download/' + message.fileName)} fileName={message.originalFileName || message.fileName} isWhiteText={message.senderType === 'patient'} />
                   ) : (
                     message.message
                   )}

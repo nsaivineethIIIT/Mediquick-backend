@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { EMPLOYEE_SECURITY_CODE } = require('../constants/constants');
 const { generateToken } = require('../middlewares/auth');
+const { getCloudinaryUrl } = require('../middlewares/upload');
 
 const {checkEmailExists, checkMobileExists} = require('../utils/utils');
 const asyncHandler = require('../middlewares/asyncHandler');
@@ -127,12 +128,12 @@ exports.signup = asyncHandler(async (req, res) => {
             });
         }
         
-        // Use the actual uploaded file paths
+        // Use the actual uploaded file URLs from Cloudinary
         const profilePhotoFile = req.files.profilePhoto[0];
         const documentFile = req.files.document[0];
         
-        const profilePhoto = `/uploads/profiles/${profilePhotoFile.filename}`;
-        const documentPath = `/uploads/documents/${documentFile.filename}`;
+        const profilePhoto = profilePhotoFile.path; // Cloudinary URL
+        const documentPath = documentFile.path; // Cloudinary URL
 
         // Hash password with bcrypt before saving
         const salt = await bcrypt.genSalt(10);
@@ -620,7 +621,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
         // Handle profile photo upload
         let updateData = { name, email, mobile, address };
         if (req.file) {
-            updateData.profilePhoto = `/uploads/profiles/${req.file.filename}`;
+            updateData.profilePhoto = req.file.path; // Cloudinary URL
         }
 
         const updatedEmployee = await Employee.findByIdAndUpdate(
@@ -863,20 +864,10 @@ exports.getDoctorRequestsAPI = asyncHandler(async (req, res) => {
             .select('name registrationNumber documentPath _id')
             .lean();
         
-        console.log('Raw doctor data from DB:', doctors.map(d => ({ 
-            name: d.name, 
-            originalPath: d.documentPath,
-            pathType: typeof d.documentPath
-        })));
-        
-        const transformedDoctors = doctors.map(doctor => {
-            const transformedPath = doctor.documentPath ? doctor.documentPath.replace(/\\/g, '/') : null;
-            console.log(`Path transform: "${doctor.documentPath}" => "${transformedPath}"`);
-            return {
-                ...doctor,
-                documentPath: transformedPath
-            };
-        });
+        const transformedDoctors = doctors.map(doctor => ({
+            ...doctor,
+            documentPath: getCloudinaryUrl(doctor.documentPath, 'document.pdf')
+        }));
         
         res.status(200).json({
             success: true,
@@ -901,9 +892,15 @@ exports.getSupplierRequestsAPI = asyncHandler(async (req, res) => {
             .select('name email mobile address supplierID profilePhoto documentPath _id createdAt')
             .lean();
         
+        const transformedSuppliers = suppliers.map(supplier => ({
+            ...supplier,
+            profilePhoto: getCloudinaryUrl(supplier.profilePhoto, 'photo.jpg'),
+            documentPath: getCloudinaryUrl(supplier.documentPath, 'document.pdf')
+        }));
+        
         res.status(200).json({
             success: true,
-            suppliers: suppliers
+            suppliers: transformedSuppliers
         });
     } catch (err) {
         console.error("Error fetching supplier requests:", err.message);
@@ -1529,6 +1526,118 @@ exports.deletePlatformReview = asyncHandler(async (req, res) => {
         });
     } catch (err) {
         console.error('Error deleting review:', err);
+        res.status(500).json({
+            error: 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+});
+
+// Get document URL with proper authentication
+exports.getDocumentURL = asyncHandler(async (req, res) => {
+    try {
+        if (!req.employeeId) {
+            return res.status(401).json({
+                error: 'Unauthorized',
+                message: 'Please log in first'
+            });
+        }
+
+        const { documentPath } = req.query;
+
+        if (!documentPath) {
+            return res.status(400).json({
+                error: 'Bad Request',
+                message: 'Document path is required'
+            });
+        }
+
+        // If documentPath is already a full Cloudinary URL, use it directly
+        if (documentPath.startsWith('http')) {
+            return res.status(200).json({
+                success: true,
+                url: documentPath
+            });
+        }
+
+        // Otherwise, construct the Cloudinary URL
+        const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+        const ext = documentPath.split('.').pop().toLowerCase();
+        const url = `https://res.cloudinary.com/${cloudName}/image/upload/${documentPath}`;
+
+        res.status(200).json({
+            success: true,
+            url: url
+        });
+    } catch (err) {
+        console.error('Error getting document URL:', err.message);
+        res.status(500).json({
+            error: 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+});
+
+// Proxy endpoint to serve documents from Cloudinary with proper headers
+exports.serveDocument = asyncHandler(async (req, res) => {
+    try {
+        const { documentPath } = req.query;
+
+        if (!documentPath) {
+            return res.status(400).json({
+                error: 'Bad Request',
+                message: 'Document path is required'
+            });
+        }
+
+        // Determine the actual URL to fetch
+        let documentUrl = documentPath;
+        if (!documentUrl.startsWith('http')) {
+            const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+            documentUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${documentPath}`;
+        }
+
+        console.log('Fetching document from:', documentUrl);
+
+        // Fetch the document from Cloudinary
+        const nodeFetch = require('node-fetch');
+        const fetchResponse = await nodeFetch(documentUrl);
+
+        if (!fetchResponse.ok) {
+            console.error('Cloudinary error:', fetchResponse.status, fetchResponse.statusText);
+            return res.status(fetchResponse.status).json({
+                error: 'Document fetch failed',
+                message: `Failed to retrieve document: ${fetchResponse.statusText}`
+            });
+        }
+
+        // Get the file extension to determine content type
+        const ext = documentPath.split('.').pop().toLowerCase();
+        let contentType = 'application/octet-stream';
+        
+        if (ext === 'pdf') {
+            contentType = 'application/pdf';
+        } else if (['jpg', 'jpeg'].includes(ext)) {
+            contentType = 'image/jpeg';
+        } else if (ext === 'png') {
+            contentType = 'image/png';
+        } else if (ext === 'gif') {
+            contentType = 'image/gif';
+        } else if (ext === 'doc' || ext === 'docx') {
+            contentType = 'application/msword';
+        }
+
+        // Set response headers for file display
+        const fileName = documentPath.split('/').pop();
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+
+        // Pipe the response
+        fetchResponse.body.pipe(res);
+    } catch (err) {
+        console.error('Error serving document:', err.message);
         res.status(500).json({
             error: 'Internal server error',
             details: process.env.NODE_ENV === 'development' ? err.message : undefined

@@ -622,14 +622,7 @@ exports.deleteDoctorNotesFile = asyncHandler(async (req, res, next) => {
             });
         }
 
-        // Remove file from filesystem
-        const fs = require('fs');
-        const filePath = appointment.doctorNotes.files[fileIndex].path;
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-        }
-
-        // Remove from array
+        // Remove file from array (Cloudinary handles storage cleanup automatically)
         appointment.doctorNotes.files.splice(fileIndex, 1);
         await appointment.save();
 

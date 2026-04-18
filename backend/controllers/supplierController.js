@@ -150,12 +150,12 @@ exports.signup = asyncHandler(async (req, res) => {
             });
         }
         
-        // Use the actual uploaded file paths
+        // Use the actual uploaded file URLs from Cloudinary
         const profilePhotoFile = req.files.profilePhoto[0];
         const documentFile = req.files.document[0];
         
-        const profilePhoto = `/uploads/profiles/${profilePhotoFile.filename}`;
-        const documentPath = `/uploads/documents/${documentFile.filename}`;
+        const profilePhoto = profilePhotoFile.path; // Cloudinary URL
+        const documentPath = documentFile.path; // Cloudinary URL
 
         // Hash password with bcrypt before saving
         const salt = await bcrypt.genSalt(10);
@@ -610,7 +610,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
         // Handle profile photo upload
         let updateData = { name, email, mobile, address, supplierID };
         if (req.file) {
-            updateData.profilePhoto = `/uploads/profiles/${req.file.filename}`;
+            updateData.profilePhoto = req.file.path; // Cloudinary URL
         }
 
         const updatedSupplier = await Supplier.findByIdAndUpdate(
@@ -841,7 +841,7 @@ exports.postAddMedicine = asyncHandler(async (req, res) => {
             cost: parseFloat(cost),
             manufacturer: manufacturer.trim(),
             expiryDate: new Date(expiryDate),
-            image: req.file ? '/uploads/medicines/' + req.file.filename : null,
+            image: req.file ? req.file.path : null, // Cloudinary URL
             supplierId: req.supplierId
         });
 
