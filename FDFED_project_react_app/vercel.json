@@ -5,16 +5,12 @@
   "installCommand": "npm install",
   "framework": "vite",
   "nodeVersion": "18.x",
-  "env": {
-    "VITE_API_BASE_URL": "@vite_api_base_url"
-  },
-  "routes": [
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "regions": ["iad1"],
+  "rewrites": [
     {
-      "src": "/api/.*",
-      "destination": "http://localhost:3001"
-    },
-    {
-      "src": "/(.*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
@@ -49,10 +45,5 @@
         }
       ]
     }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "regions": ["iad1"],
-  "buildCommand": "npm run build && npm run build:fallback",
-  "outputDirectory": "dist"
+  ]
 }
