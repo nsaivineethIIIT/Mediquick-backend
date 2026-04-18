@@ -49,7 +49,8 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             fontSrc: ["'self'", "data:"],
-            connectSrc: ["'self'", "http://localhost:3002", "http://localhost:5173", "http://127.0.0.1:3002", "http://127.0.0.1:5173"],
+            connectSrc: ["'self'", "http://localhost:3002", "http://localhost:5173", "http://127.0.0.1:3002", "http://127.0.0.1:5173", "https://mediquick-backend-j9hu.onrender.com",
+    "https://mediquick-frontend-tawny.vercel.app"],
             frameSrc: ["'self'", "blob:"],
             objectSrc: ["'self'", "blob:"],
             mediaSrc: ["'self'", "blob:"],
@@ -178,7 +179,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // CORS must be before static file serving
 app.use(cors({
-    origin: ['http://localhost', 'http://localhost:80', 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://127.0.0.1:5173'], 
+    origin: ['http://localhost', 'http://localhost:80', 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://127.0.0.1:5173','https://mediquick-frontend-tawny.vercel.app'], 
     credentials: true, 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
