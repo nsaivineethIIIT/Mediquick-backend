@@ -1,25 +1,61 @@
+const fs = require('fs');
+const path = require('path');
+
+const viewsDir = path.join(__dirname, '..', 'views');
+
+const renderOrFallback = (res, viewName, fallbackPayload) => {
+    const viewPath = path.join(viewsDir, `${viewName}.ejs`);
+
+    if (fs.existsSync(viewPath)) {
+        return res.render(viewName);
+    }
+
+    return res.status(200).json({
+        success: true,
+        ...fallbackPayload
+    });
+};
+
 exports.getHome = (req, res) => {
-    res.render('home_page');
+    return renderOrFallback(res, 'home_page', {
+        message: 'MediQuick backend is running',
+        path: '/'
+    });
 };
 
 exports.getAbout = (req, res) => {
-    res.render('about_us');
+    return renderOrFallback(res, 'about_us', {
+        message: 'About page view is not configured yet',
+        path: '/about'
+    });
 };
 
 exports.getContact = (req, res) => {
-    res.render('contactus');
+    return renderOrFallback(res, 'contactus', {
+        message: 'Contact page view is not configured yet',
+        path: '/contact'
+    });
 };
 
 exports.getFaqs = (req, res) => {
-    res.render('FAQS');
+    return renderOrFallback(res, 'FAQS', {
+        message: 'FAQs page view is not configured yet',
+        path: '/faqs'
+    });
 };
 
 exports.getTerms = (req, res) => {
-    res.render('terms_conditions');
+    return renderOrFallback(res, 'terms_conditions', {
+        message: 'Terms page view is not configured yet',
+        path: '/terms'
+    });
 };
 
 exports.getPrivacy = (req, res) => {
-    res.render('privacy_policy');
+    return renderOrFallback(res, 'privacy_policy', {
+        message: 'Privacy page view is not configured yet',
+        path: '/privacy'
+    });
 };
 
 exports.getLogout = (req, res) => {
@@ -32,8 +68,17 @@ exports.getLogout = (req, res) => {
 };
 
 exports.getTestError = (req, res) => {
-    res.render('error', {
-        message: 'Test error message',
-        redirect: '/'
+    const errorViewPath = path.join(viewsDir, 'error.ejs');
+
+    if (fs.existsSync(errorViewPath)) {
+        return res.render('error', {
+            message: 'Test error message',
+            redirect: '/'
+        });
+    }
+
+    return res.status(500).json({
+        success: false,
+        message: 'Test error message'
     });
 };

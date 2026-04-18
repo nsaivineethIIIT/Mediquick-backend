@@ -16,7 +16,7 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('./middlewares/auth');
 const { initializeRedis } = require('./utils/redisClient');
 
-const port = process.env.PORT || 3002; 
+const PORT = process.env.PORT || 3002; 
 const cors = require('cors');
 
 
@@ -621,11 +621,13 @@ app.use((err, req, res, next) => {
 });
 
 
-const server = app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-    console.log('Current date and time:', new Date('2025-09-12T03:47:00Z').toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
-    // console.log(`Database status: ${app.locals.dbConnected ? 'Connected' : 'Disconnected'}`);
-    // console.log('Health check available at: /health');
-});
+// Start server only when app.js is run directly, not when imported in tests/modules.
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+        console.log(`Swagger docs at http://localhost:${PORT}/api-docs`);
+        console.log('Current date and time:', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+    });
+}
 
-module.exports = app; 
+module.exports = app;
