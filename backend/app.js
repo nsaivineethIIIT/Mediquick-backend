@@ -381,6 +381,10 @@ app.get('/', (req, res) => {
     });
 });
 
+app.head('/', (req, res) => {
+    res.sendStatus(200);
+});
+
 app.use('/appointment', appointmentRoutes);
 app.use('/admin', adminRoutes);
 app.use('/supplier', supplierRoutes);
@@ -425,15 +429,6 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
     message: 'Server is healthy',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Root health check endpoint
-app.get('/', (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    message: 'Nutri-Connect Backend Server is running',
     timestamp: new Date().toISOString()
   });
 });
