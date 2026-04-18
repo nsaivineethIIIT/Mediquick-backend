@@ -372,6 +372,15 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swaggerConfig');
 
+// Root health check endpoint
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        message: 'Nutri-Connect Backend Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.use('/appointment', appointmentRoutes);
 app.use('/admin', adminRoutes);
 app.use('/supplier', supplierRoutes);
@@ -409,32 +418,25 @@ app.get('/patient_form', (req, res) => res.redirect('/patient_form'));
 app.get('/admin_form', (req, res) => res.redirect('/admin_form'));
 app.get('/supplier_form', (req, res) => res.redirect('/supplier_form'));
 app.get('/employee_form', (req, res) => res.redirect('/employee_form'));
-app.get('/', (req, res) => res.redirect('/'));
 app.get('/logout', (req, res) => res.redirect('/logout'));
 app.get('/test-error', (req, res) => res.redirect('/test-error'));
 
-
-app.get('/health', (req, res) => {
-    const dbStatus = app.locals.dbConnected || false;
-    
-    if (!dbStatus) {
-        return res.status(503).json({
-            success: false,
-            status: 'unhealthy',
-            message: 'Database connection unavailable',
-            timestamp: new Date().toISOString()
-        });
-    }
-    
-    res.status(200).json({
-        success: true,
-        status: 'healthy',
-        message: 'All systems operational',
-        database: 'connected',
-        timestamp: new Date().toISOString()
-    });
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Server is healthy',
+    timestamp: new Date().toISOString()
+  });
 });
 
+// Root health check endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Nutri-Connect Backend Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
 app.get('/api/test-error', (req, res, next) => {
     const error = new Error('This is a test error');
