@@ -844,16 +844,17 @@ const AdminDashboard = () => {
                       <th>Fee</th>
                       <th>Revenue (10%)</th>
                       <th>Status</th>
+                      <th>Payment</th>
                     </tr>
                   </thead>
                   <tbody>
                     {adminLoading.appointments ? (
                       <tr>
-                        <td colSpan="8" className="loading">Loading appointments...</td>
+                        <td colSpan="9" className="loading">Loading appointments...</td>
                       </tr>
                     ) : appointments.length === 0 ? (
                       <tr>
-                        <td colSpan="8">No appointments found</td>
+                        <td colSpan="9">No appointments found</td>
                       </tr>
                     ) : (
                       appointments.map(appt => (
@@ -868,6 +869,15 @@ const AdminDashboard = () => {
                           <td>
                             <span className={`status ${appt.status || 'pending'}`}>
                               {appt.status || 'Pending'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`status ${appt.paymentStatus || 'pending'}`} style={{
+                              background: appt.paymentStatus === 'paid' ? '#e8f5e9' : appt.paymentStatus === 'refunded' ? '#fff3e0' : '#f5f5f5',
+                              color: appt.paymentStatus === 'paid' ? '#2e7d32' : appt.paymentStatus === 'refunded' ? '#e65100' : '#757575',
+                              padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600
+                            }}>
+                              {appt.paymentStatus || 'pending'}
                             </span>
                           </td>
                         </tr>
@@ -909,18 +919,20 @@ const AdminDashboard = () => {
                       <th>Specialization</th>
                       <th>Date</th>
                       <th>Fee</th>
-                      <th>Revenue (10%)</th>
+                      <th>MediQuick Revenue</th>
+                      <th>Doctor Payout (90%)</th>
                       <th>Status</th>
+                      <th>Payment</th>
                     </tr>
                   </thead>
                   <tbody>
                     {adminLoading.finance ? (
                       <tr>
-                        <td colSpan="7" className="loading">Loading finance data...</td>
+                        <td colSpan="9" className="loading">Loading finance data...</td>
                       </tr>
                     ) : financeData.length === 0 ? (
                       <tr>
-                        <td colSpan="7">No financial data found</td>
+                        <td colSpan="9">No financial data found</td>
                       </tr>
                     ) : (
                       financeData.map(transaction => (
@@ -929,11 +941,21 @@ const AdminDashboard = () => {
                           <td>{transaction.doctorName || 'Unknown Doctor'}</td>
                           <td>{transaction.specialization || 'General Physician'}</td>
                           <td>{formatDate(transaction.date)}</td>
-                          <td>{formatCurrency(transaction.fee)}</td>
-                          <td>{formatCurrency(transaction.revenue)}</td>
+                          <td>{formatCurrencyINR(transaction.fee)}</td>
+                          <td>{formatCurrencyINR(transaction.revenue)}</td>
+                          <td>{transaction.doctorPayout > 0 ? formatCurrencyINR(transaction.doctorPayout) : '—'}</td>
                           <td>
                             <span className={`status ${transaction.status || 'pending'}`}>
                               {transaction.status || 'Pending'}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{
+                              background: transaction.paymentStatus === 'paid' ? '#e8f5e9' : transaction.paymentStatus === 'refunded' ? '#fff3e0' : '#f5f5f5',
+                              color: transaction.paymentStatus === 'paid' ? '#2e7d32' : transaction.paymentStatus === 'refunded' ? '#e65100' : '#757575',
+                              padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600
+                            }}>
+                              {transaction.paymentStatus || 'pending'}
                             </span>
                           </td>
                         </tr>

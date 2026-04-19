@@ -74,6 +74,34 @@ const appointmentSchema = new mongoose.Schema({
     reviewedAt: {
         type: Date,
         default: null
+    },
+
+    // ─── Razorpay Payment Fields ────────────────────────────────────────────────
+    razorpayOrderId: {
+        type: String,
+        default: null
+    },
+    razorpayPaymentId: {
+        type: String,
+        default: null
+    },
+    razorpaySignature: {
+        type: String,
+        default: null
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'paid', 'refunded'],
+        default: 'pending'
+    },
+    // Revenue split (populated when appointment is completed)
+    doctorPayoutAmount: {
+        type: Number,
+        default: 0
+    },
+    mediquickCommission: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

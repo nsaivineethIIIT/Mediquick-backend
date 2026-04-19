@@ -3,6 +3,7 @@ const Appointment = require('../models/Appointment');
 const Doctor = require('../models/Doctor');
 const asyncHandler = require('../middlewares/asyncHandler');
 const { getCache, setCache, deleteCache, deleteCachePattern } = require('../utils/redisClient');
+const { refundPayment } = require('./paymentController');
 
 exports.postCreate = asyncHandler(async (req, res, next) => {
     if (!req.patientId) {
@@ -134,7 +135,7 @@ exports.getDoctorAppointments = asyncHandler(async (req, res, next) => {
     }
 });
 
-exports.patchUpdateStatus =  asyncHandler(async (req, res, next) => {
+exports.patchUpdateStatus = asyncHandler(async (req, res, next) => {
     if (!req.doctorId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -157,6 +158,23 @@ exports.patchUpdateStatus =  asyncHandler(async (req, res, next) => {
 
         if (!appointment) {
             return res.status(404).json({ error: 'Appointment not found' });
+        }
+
+        // ── Revenue split when completed ─────────────────────────────────────
+        if (status === 'completed' && appointment.paymentStatus === 'paid') {
+            const fee = appointment.consultationFee || 0;
+            appointment.doctorPayoutAmount = Math.round(fee * 0.9 * 100) / 100;  // 90%
+            appointment.mediquickCommission = Math.round(fee * 0.1 * 100) / 100; // 10%
+            await appointment.save();
+            console.log(`✅ Revenue split: Doctor ₹${appointment.doctorPayoutAmount}, MediQuick ₹${appointment.mediquickCommission}`);
+        }
+
+        // ── Refund when doctor cancels ────────────────────────────────────────
+        if (status === 'cancelled') {
+            const refunded = await refundPayment(appointment._id);
+            if (refunded) {
+                console.log('✅ Refund issued for doctor-cancelled appointment:', appointment._id);
+            }
         }
 
         console.log('Appointment status updated:', appointment);
@@ -454,6 +472,12 @@ exports.patchCancelByPatient = asyncHandler(async (req, res, next) => {
                 error: 'Appointment not found or cannot be cancelled',
                 details: 'Appointment may have already been completed, cancelled, or does not exist'
             });
+        }
+
+        // ── Refund when patient cancels ───────────────────────────────────────
+        const refunded = await refundPayment(appointment._id);
+        if (refunded) {
+            console.log('✅ Refund issued for patient-cancelled appointment:', appointment._id);
         }
 
         console.log('Appointment cancelled by patient:', appointment);

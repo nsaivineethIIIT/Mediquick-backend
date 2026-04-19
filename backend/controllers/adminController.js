@@ -714,6 +714,17 @@ exports.getAppointments = asyncHandler(async (req, res) => {
 
         const formattedAppointments = appointments.map(appt => {
             const dateStr = appt.date.toISOString().split('T')[0];
+            const fee = appt.consultationFee || 0;
+            // Use stored mediquickCommission for completed paid appointments,
+            // 0 for refunded, fallback to 10% estimate for old/cash appointments.
+            let revenue;
+            if (appt.paymentStatus === 'refunded') {
+                revenue = 0;
+            } else if (appt.mediquickCommission && appt.mediquickCommission > 0) {
+                revenue = appt.mediquickCommission;
+            } else {
+                revenue = fee * 0.1;
+            }
             return {
                 _id: appt._id,
                 patientName: appt.patientId?.name || 'Unknown Patient',
@@ -722,9 +733,11 @@ exports.getAppointments = asyncHandler(async (req, res) => {
                 specialization: appt.doctorId?.specialization || 'General Physician',
                 date: dateStr,
                 time: appt.time,
-                fee: appt.consultationFee || 0,
-                revenue: (appt.consultationFee || 0) * 0.1, // 10% revenue
-                status: appt.status
+                fee,
+                revenue,
+                status: appt.status,
+                paymentStatus: appt.paymentStatus || 'pending',
+                razorpayPaymentId: appt.razorpayPaymentId || null
             };
         });
 
@@ -890,17 +903,32 @@ exports.getFinanceData = asyncHandler(async (req, res) => {
         .sort({ date: -1 })
         .lean();
 
-        const financeData = appointments.map(appt => ({
-            _id: appt._id,
-            patientName: appt.patientId?.name || 'Unknown Patient',
-            doctorName: appt.doctorId?.name || 'Unknown Doctor',
-            specialization: appt.doctorId?.specialization || 'General Physician',
-            date: appt.date.toISOString().split('T')[0],
-            time: appt.time,
-            fee: appt.consultationFee || 0,
-            revenue: (appt.consultationFee || 0) * 0.1, // 10% revenue
-            status: appt.status
-        }));
+        const financeData = appointments.map(appt => {
+            const fee = appt.consultationFee || 0;
+            // Use actual stored commission when available
+            let revenue;
+            if (appt.paymentStatus === 'refunded') {
+                revenue = 0;
+            } else if (appt.mediquickCommission && appt.mediquickCommission > 0) {
+                revenue = appt.mediquickCommission;
+            } else {
+                revenue = fee * 0.1; // fallback for old/cash appointments
+            }
+            return {
+                _id: appt._id,
+                patientName: appt.patientId?.name || 'Unknown Patient',
+                doctorName: appt.doctorId?.name || 'Unknown Doctor',
+                specialization: appt.doctorId?.specialization || 'General Physician',
+                date: appt.date.toISOString().split('T')[0],
+                time: appt.time,
+                fee,
+                revenue,
+                status: appt.status,
+                paymentStatus: appt.paymentStatus || 'pending',
+                doctorPayout: appt.doctorPayoutAmount || 0,
+                razorpayPaymentId: appt.razorpayPaymentId || null
+            };
+        });
 
         res.json(financeData);
     } catch (err) {

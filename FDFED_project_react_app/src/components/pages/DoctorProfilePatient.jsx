@@ -205,24 +205,30 @@ const DoctorProfilePatient = () => {
         }
     };
 
+    // ─── Load Razorpay checkout script dynamically ──────────────────────────────
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            if (window.Razorpay) { resolve(true); return; }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
     const handleBookAppointment = () => {
         if (!selectedDate || !selectedTime) {
             alert('Please select a valid date and time slot.');
             return;
         }
-
         setShowPaymentModal(true);
     };
 
-    const handleConfirmPayment = async () => {
-        if (!paymentMethod) {
-            alert('Please select a payment method.');
-            return;
-        }
-
+    // ─── Cash: book directly without Razorpay ──────────────────────────────────
+    const bookCashAppointment = async () => {
         setBooking(true);
         setBookingError(null);
-
         try {
             const token = getToken('patient');
             const API = import.meta.env.VITE_API_URL;
@@ -238,20 +244,127 @@ const DoctorProfilePatient = () => {
                     time: selectedTime,
                     type: isOnlineConsultation ? 'online' : 'offline',
                     notes: '',
-                    modeOfPayment: paymentMethod
+                    modeOfPayment: 'cash'
                 })
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || errorData.message || 'Failed to book appointment');
             }
-
             setBookingSuccess(true);
         } catch (err) {
-            console.error('Error booking appointment:', err);
+            console.error('Error booking cash appointment:', err);
             setBookingError(err.message);
         } finally {
+            setBooking(false);
+        }
+    };
+
+    // ─── Online: Razorpay checkout flow ────────────────────────────────────────
+    const handleConfirmPayment = async () => {
+        if (!paymentMethod) {
+            alert('Please select a payment method.');
+            return;
+        }
+
+        // Cash path — no Razorpay needed
+        if (paymentMethod === 'cash') {
+            setShowPaymentModal(false);
+            setPaymentMethod('');
+            await bookCashAppointment();
+            return;
+        }
+
+        setBooking(true);
+        setBookingError(null);
+
+        try {
+            const token = getToken('patient');
+            const API = import.meta.env.VITE_API_URL;
+
+            // Step 1 — Create Razorpay order on backend
+            const orderRes = await fetch(`${API}/payment/create-order`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ doctorId: id })
+            });
+
+            if (!orderRes.ok) {
+                const errData = await orderRes.json();
+                throw new Error(errData.error || 'Failed to create payment order');
+            }
+            const orderData = await orderRes.json();
+
+            // Step 2 — Load Razorpay SDK
+            const loaded = await loadRazorpayScript();
+            if (!loaded) {
+                throw new Error('Razorpay SDK failed to load. Check your internet connection.');
+            }
+
+            // Step 3 — Open Razorpay checkout modal
+            const rzpOptions = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: orderData.amount,
+                currency: orderData.currency,
+                name: 'MediQuick',
+                description: `Consultation with Dr. ${doctor.name}`,
+                order_id: orderData.orderId,
+                prefill: {
+                    name: patient?.name || '',
+                    email: patient?.email || '',
+                    contact: patient?.mobile || ''
+                },
+                theme: { color: '#4f46e5' },
+                handler: async (response) => {
+                    // Step 4 — Verify payment + create appointment atomically
+                    try {
+                        const verifyRes = await fetch(`${API}/payment/verify`, {
+                            method: 'POST',
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                doctorId: id,
+                                date: selectedDate,
+                                time: selectedTime,
+                                type: isOnlineConsultation ? 'online' : 'offline',
+                                notes: '',
+                                modeOfPayment: paymentMethod
+                            })
+                        });
+                        if (!verifyRes.ok) {
+                            const errData = await verifyRes.json();
+                            throw new Error(errData.error || 'Payment verification failed');
+                        }
+                        setBookingSuccess(true);
+                    } catch (verifyErr) {
+                        console.error('Payment verification error:', verifyErr);
+                        setBookingError(verifyErr.message);
+                    } finally {
+                        setBooking(false);
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        // User closed without paying — no charge
+                        setBooking(false);
+                    }
+                }
+            };
+
+            const rzp = new window.Razorpay(rzpOptions);
+            rzp.open();
+
+        } catch (err) {
+            console.error('Error initiating Razorpay payment:', err);
+            setBookingError(err.message);
             setBooking(false);
         }
     };
@@ -260,6 +373,7 @@ const DoctorProfilePatient = () => {
         setShowPaymentModal(false);
         setPaymentMethod('');
     };
+
 
     const getProfileImageUrl = () => {
         if (!patient?.profilePhoto) {
@@ -574,11 +688,18 @@ const DoctorProfilePatient = () => {
 
                                 <div className="space-y-3">
                                     {[
-                                        { value: 'credit-card', label: 'Credit/Debit Card' },
-                                        { value: 'upi', label: 'UPI' },
-                                        { value: 'net-banking', label: 'Net Banking' },
-                                        { value: 'wallet', label: 'Wallet' },
-                                        { value: 'cash', label: 'Cash (Pay at Clinic)' }
+                                        {
+                                            value: 'upi',
+                                            label: 'Pay Online via Razorpay',
+                                            sub: 'UPI · Cards · Net Banking · Wallets',
+                                            icon: 'payment'
+                                        },
+                                        {
+                                            value: 'cash',
+                                            label: 'Cash (Pay at Clinic)',
+                                            sub: 'No online payment required',
+                                            icon: 'payments'
+                                        }
                                     ].map((method) => (
                                         <label
                                             key={method.value}
@@ -591,8 +712,11 @@ const DoctorProfilePatient = () => {
                                                 checked={paymentMethod === method.value}
                                                 onChange={(event) => setPaymentMethod(event.target.value)}
                                             />
-                                            <span className="material-symbols-outlined text-primary">payments</span>
-                                            <span className="text-sm font-medium text-on-surface">{method.label}</span>
+                                            <span className="material-symbols-outlined text-primary">{method.icon}</span>
+                                            <div>
+                                                <span className="block text-sm font-medium text-on-surface">{method.label}</span>
+                                                <span className="text-xs text-on-surface-variant">{method.sub}</span>
+                                            </div>
                                         </label>
                                     ))}
                                 </div>

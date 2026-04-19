@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Global button readability baseline */
 :where(button, .btn, .button, input[type="button"], input[type="submit"], input[type="reset"]) {
 	-webkit-text-fill-color: currentColor;
@@ -31,4 +35,3 @@
 	-webkit-font-smoothing: antialiased;
 	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
-
