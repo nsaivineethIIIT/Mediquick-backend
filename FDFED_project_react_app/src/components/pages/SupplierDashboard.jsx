@@ -143,7 +143,7 @@ const SupplierDashboard = () => {
     const cartItems = orderList.filter((o) => o.status === 'in_cart').length;
     const totalRevenue = orderList
       .filter((o) => o.status === 'delivered')
-      .reduce((sum, o) => sum + (o.totalCost || 0), 0);
+      .reduce((sum, o) => sum + (o.supplierPayoutAmount || ((o.totalCost || 0) * 0.95)), 0);
 
     setStats((prev) => ({
       ...prev,
@@ -306,7 +306,7 @@ const SupplierDashboard = () => {
   const getMedicineIncome = (medicineID) =>
     orders
       .filter((o) => o.status === 'delivered' && o.medicineId === medicineID)
-      .reduce((sum, o) => sum + (o.totalCost || 0), 0);
+      .reduce((sum, o) => sum + (o.supplierPayoutAmount || ((o.totalCost || 0) * 0.95)), 0);
 
   const filteredOrders = useMemo(() => {
     if (activeOrderFilter === 'all') return orders;

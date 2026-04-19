@@ -186,7 +186,9 @@ const PatientOrders = () => {
                                             <div className="payment-info">
                                                 <i className="fas fa-credit-card"></i>
                                                 <span>{order.paymentMethod === 'cod' ? 'Cash on Delivery' : 
-                                                      order.paymentMethod === 'upi' ? 'UPI Payment' : 'Card Payment'}</span>
+                                                      order.paymentMethod === 'upi' ? 'UPI Payment' : 'Card Payment'} 
+                                                      {order.paymentStatus ? ` (${order.paymentStatus})` : ''}
+                                                </span>
                                             </div>
                                         )}
                                         {order.deliveryAddress && (

@@ -47,7 +47,17 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 10
     },
-    finalAmount: Number
+    finalAmount: Number,
+    razorpayOrderId: String,
+    razorpayPaymentId: String,
+    razorpaySignature: String,
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'paid', 'refunded', 'failed'],
+        default: 'pending'
+    },
+    supplierPayoutAmount: Number,
+    mediquickCommission: Number
 }, { timestamps: true });
 
 // Add indexes for performance optimization

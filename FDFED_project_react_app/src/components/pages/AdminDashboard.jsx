@@ -989,7 +989,9 @@ const AdminDashboard = () => {
                       <th>Date</th>
                       <th>Total Amount (₹)</th>
                       <th>MediQuick Commission (5%) (₹)</th>
+                      <th>Supplier Payout (95%) (₹)</th>
                       <th>Status</th>
+                      <th>Payment</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1010,9 +1012,19 @@ const AdminDashboard = () => {
                           <td>{row.date}</td>
                           <td>{formatCurrencyINR(row.totalAmount)}</td>
                           <td>{formatCurrencyINR(row.mediQuickCommission)}</td>
+                          <td>{formatCurrencyINR(row.supplierPayout)}</td>
                           <td>
                             <span className={`status ${row.status}`}>
                               {row.status}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{
+                              background: row.paymentStatus === 'paid' ? '#e8f5e9' : row.paymentStatus === 'refunded' ? '#fff3e0' : '#f5f5f5',
+                              color: row.paymentStatus === 'paid' ? '#2e7d32' : row.paymentStatus === 'refunded' ? '#e65100' : '#757575',
+                              padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600
+                            }}>
+                              {row.paymentStatus || 'pending'}
                             </span>
                           </td>
                         </tr>
@@ -1024,6 +1036,8 @@ const AdminDashboard = () => {
                       <td colSpan="4"><strong>Totals</strong></td>
                       <td><strong>{formatCurrencyINR(medicineFinance.totals.totalAmount)}</strong></td>
                       <td><strong>{formatCurrencyINR(medicineFinance.totals.totalCommission)}</strong></td>
+                      <td><strong>{formatCurrencyINR(medicineFinance.totals.totalSupplierPayout)}</strong></td>
+                      <td></td>
                       <td></td>
                     </tr>
                   </tfoot>

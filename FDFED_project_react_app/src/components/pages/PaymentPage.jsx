@@ -74,7 +74,19 @@ const PaymentPage = () => {
     const selectPayment = (method) => {
         setPaymentMethod(method);
     };
-    
+
+    // Load Razorpay checkout script dynamically
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            if (window.Razorpay) { resolve(true); return; }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
     const processPayment = async () => {
         if (!orderDetails) {
             alert("No order details found. Please go back and try again.");
@@ -91,31 +103,126 @@ const PaymentPage = () => {
         try {
             const token = getToken();
             const API = import.meta.env.VITE_API_URL;
-            const response = await fetch(`${API}/patient/process-payment`, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${token}`
-                },
-                credentials: 'include', // Include cookies for session management
-                body: JSON.stringify({ paymentMethod })
-            });
 
-            if (response.status === 401) {
-                removeToken();
-                navigate('/patient/form');
-                return;
-            }
+            if (paymentMethod === 'cod') {
+                // Cash on Delivery - process normally
+                const response = await fetch(`${API}/patient/process-payment`, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ paymentMethod })
+                });
 
-            const data = await response.json();
+                if (response.status === 401) {
+                    removeToken();
+                    navigate('/patient/form');
+                    return;
+                }
 
-            if (data.success) {
-                // Show success message before redirect
-                alert("Payment processed successfully! Redirecting to confirmation...");
-                // Redirect to success page
-                navigate(`/patient/order-success?paymentMethod=${paymentMethod}`);
+                const data = await response.json();
+                if (data.success) {
+                    alert("Payment processed successfully! Redirecting to confirmation...");
+                    navigate(`/patient/order-success?paymentMethod=${paymentMethod}`);
+                } else {
+                    alert("Payment failed: " + (data.error || 'Unknown error occurred'));
+                }
             } else {
-                alert("Payment failed: " + (data.error || 'Unknown error occurred'));
+                // Online Payment (Card / UPI) using Razorpay
+                // Step 1 - get new order ID from backend
+                const createOrderRes = await fetch(`${API}/medicine-payment/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    credentials: 'include'
+                });
+                
+                if (createOrderRes.status === 401) {
+                    removeToken();
+                    navigate('/patient/form');
+                    return;
+                }
+                
+                const orderData = await createOrderRes.json();
+                
+                if (!createOrderRes.ok) {
+                    throw new Error(orderData.error || 'Failed to initialize payment');
+                }
+
+                // Step 2 - Load SDK
+                const loaded = await loadRazorpayScript();
+                if (!loaded) {
+                    throw new Error('Razorpay SDK failed to load. Check your internet connection.');
+                }
+
+                // Step 3 - Open Checkout
+                const options = {
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    name: 'MediQuick Pharmacy',
+                    description: 'Medicine Purchase',
+                    order_id: orderData.orderId,
+                    handler: async function (response) {
+                        try {
+                            loadingSpinner.style.display = "block";
+                            const verifyRes = await fetch(`${API}/medicine-payment/verify`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    paymentMethod: paymentMethod
+                                })
+                            });
+
+                            const verifyData = await verifyRes.json();
+                            if (verifyData.success) {
+                                alert("Payment verified and order placed successfully!");
+                                window.location.href = `/patient/order-success?paymentMethod=${paymentMethod}`;
+                            } else {
+                                alert("Failed to verify payment: " + verifyData.error);
+                                loadingSpinner.style.display = "none";
+                                payButton.disabled = false;
+                            }
+                        } catch (err) {
+                            console.error('Verification error:', err);
+                            alert("Payment verification failed. If money was deducted, please contact support.");
+                            loadingSpinner.style.display = "none";
+                            payButton.disabled = false;
+                        }
+                    },
+                    prefill: {
+                        name: orderDetails.deliveryAddress?.label || 'Patient',
+                        contact: '9999999999' // Hardcoded or fetching from actual patient if needed
+                    },
+                    theme: {
+                        color: '#0058be'
+                    }
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.on('payment.failed', function (res) {
+                    console.error('Payment failed:', res.error);
+                    alert("Payment failed: " + res.error.description);
+                    loadingSpinner.style.display = "none";
+                    payButton.disabled = false;
+                });
+                
+                rzp.open();
+                
+                // Keep UI "loading" while Razorpay is open, but stop spinner 
+                // so user can interact with modal.
+                loadingSpinner.style.display = "none";
             }
         } catch (error) {
             console.error("Payment error:", error);

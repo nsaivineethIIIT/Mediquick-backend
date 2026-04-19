@@ -369,6 +369,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const medicinePaymentRoutes = require('./routes/medicinePaymentRoutes');
 
 // Swagger setup
 const swaggerUi = require('swagger-ui-express');
@@ -401,6 +402,7 @@ app.use('/order', orderRoutes);
 app.use('/prescription',prescriptionRoutes);
 app.use('/review', reviewRoutes);
 app.use('/payment', paymentRoutes);
+app.use('/medicine-payment', medicinePaymentRoutes);
 
 // Swagger API Documentation
 app.use('/api-docs', swaggerUi.serve);

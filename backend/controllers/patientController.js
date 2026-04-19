@@ -1143,7 +1143,9 @@ exports.getOrders = asyncHandler(async (req, res) => {
             status: o.status,
             orderDate: o.createdAt ? o.createdAt.toLocaleDateString() : '',
             deliveryAddress: o.deliveryAddress || null,
-            paymentMethod: o.paymentMethod || null
+            paymentMethod: o.paymentMethod || null,
+            paymentStatus: o.paymentStatus || 'pending',
+            finalAmount: o.finalAmount || o.totalCost
         }));
 
         res.json(formatted);

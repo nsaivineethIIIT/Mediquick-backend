@@ -750,7 +750,9 @@ exports.getOrders = asyncHandler(async (req, res) => {
             deliveryAddress: order.deliveryAddress,
             paymentMethod: order.paymentMethod,
             deliveryCharge: order.deliveryCharge,
-            finalAmount: order.finalAmount
+            finalAmount: order.finalAmount,
+            supplierPayoutAmount: order.supplierPayoutAmount,
+            paymentStatus: order.paymentStatus
         }));
 
         // Combine both actual orders and cart items

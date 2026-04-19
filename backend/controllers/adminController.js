@@ -1219,29 +1219,43 @@ exports.getMedicineFinance = asyncHandler(async (req, res) => {
             .sort({ createdAt: -1 })
             .lean();
 
-        const data = orders.map(o => ({
-            _id: o._id,
-            patientName: o.patientId?.name || 'Unknown Patient',
-            medicineName: o.medicineId?.name || 'Unknown Medicine',
-            supplierName: o.supplierId?.name || 'Unknown Supplier',
-            date: o.createdAt ? o.createdAt.toISOString().split('T')[0] : '',
-            time: o.createdAt ? new Date(o.createdAt).toLocaleTimeString() : '',
-            totalAmount: o.totalCost || 0,
-            mediQuickCommission: Number(((o.totalCost || 0) * 0.05).toFixed(2)),
-            status: o.status
-        }));
-
+        const data = orders.map(o => {
+            // Use stored mediquickCommission if available, else calculate legacy 5%
+            let commission = 0;
+            if (o.mediquickCommission && o.mediquickCommission > 0) {
+                commission = o.mediquickCommission;
+            } else {
+                commission = Number(((o.finalAmount || o.totalCost || 0) * 0.05).toFixed(2));
+            }
+            
+            return {
+                _id: o._id,
+                patientName: o.patientId?.name || 'Unknown Patient',
+                medicineName: o.medicineId?.name || 'Unknown Medicine',
+                supplierName: o.supplierId?.name || 'Unknown Supplier',
+                date: o.createdAt ? o.createdAt.toISOString().split('T')[0] : '',
+                time: o.createdAt ? new Date(o.createdAt).toLocaleTimeString() : '',
+                totalAmount: o.finalAmount || o.totalCost || 0,
+                mediQuickCommission: commission,
+                paymentMethod: o.paymentMethod || 'cod',
+                paymentStatus: o.paymentStatus || 'pending',
+                supplierPayout: o.supplierPayoutAmount || ((o.finalAmount || o.totalCost || 0) - commission),
+                status: o.status
+            };
+        });
         // Also compute totals
         const totals = data.reduce((acc, row) => {
             acc.totalOrders++;
             acc.totalAmount += Number(row.totalAmount || 0);
             acc.totalCommission += Number(row.mediQuickCommission || 0);
+            acc.totalSupplierPayout += Number(row.supplierPayout || 0);
             return acc;
-        }, { totalOrders: 0, totalAmount: 0, totalCommission: 0 });
+        }, { totalOrders: 0, totalAmount: 0, totalCommission: 0, totalSupplierPayout: 0 });
 
         // Round totals
         totals.totalAmount = Number(totals.totalAmount.toFixed(2));
         totals.totalCommission = Number(totals.totalCommission.toFixed(2));
+        totals.totalSupplierPayout = Number(totals.totalSupplierPayout.toFixed(2));
 
         res.json({ rows: data, totals });
     } catch (err) {
