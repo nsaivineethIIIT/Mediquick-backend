@@ -624,8 +624,8 @@ const DoctorDashboard = () => {
     weekday: 'short'
   });
 
-  const topUpcomingAppointments = upcomingAppointments.slice(0, 4);
-  const topPreviousAppointments = previousAppointments.slice(0, 6);
+  const topUpcomingAppointments = upcomingAppointments;
+  const topPreviousAppointments = previousAppointments;
 
   return (
     <DoctorLayoutShell activeItem="schedule">
