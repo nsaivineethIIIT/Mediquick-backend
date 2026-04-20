@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const Patient = require('../models/Patient');
 const Doctor = require('../models/Doctor');
 const Medicine = require('../models/Medicine');
@@ -19,6 +20,18 @@ const path = require('path');
 const { sendOtpEmail } = require('../utils/email');
 const { storePending, verifyPending, refreshOtp } = require('../utils/pendingSignups');
 const solrClient = require('../utils/solrClient');
+
+const GOOGLE_TOKEN_INFO_URL = 'https://oauth2.googleapis.com/tokeninfo';
+
+const verifyGoogleIdToken = async (idToken) => {
+    const response = await fetch(`${GOOGLE_TOKEN_INFO_URL}?id_token=${encodeURIComponent(idToken)}`);
+
+    if (!response.ok) {
+        throw new Error('Invalid Google token');
+    }
+
+    return response.json();
+};
 
 /**
  * @swagger
@@ -2308,4 +2321,138 @@ exports.getOrderDetails = asyncHandler(async (req, res) => {
             error: { status: 500 }
         });
     }
+});
+
+/**
+ * @swagger
+ * /patient/oauth/google:
+ *   post:
+ *     summary: Patient OAuth Login (Google)
+ *     description: Verifies Google ID token, creates/links patient account, and returns app JWT
+ *     tags:
+ *       - Patient
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idToken
+ *             properties:
+ *               idToken:
+ *                 type: string
+ *                 description: Google ID token from client sign-in
+ *     responses:
+ *       200:
+ *         description: OAuth login successful
+ *       400:
+ *         description: Missing or invalid token
+ *       500:
+ *         description: Server configuration or internal error
+ */
+exports.googleOauthLogin = asyncHandler(async (req, res) => {
+    const { idToken } = req.body || {};
+
+    if (!idToken) {
+        return res.status(400).json({
+            error: 'Missing token',
+            details: 'Google ID token is required'
+        });
+    }
+
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    if (!googleClientId) {
+        return res.status(500).json({
+            error: 'OAuth not configured',
+            details: 'GOOGLE_CLIENT_ID is missing on the server'
+        });
+    }
+
+    let googlePayload;
+    try {
+        googlePayload = await verifyGoogleIdToken(idToken);
+    } catch (err) {
+        return res.status(401).json({
+            error: 'Invalid Google token',
+            details: err.message
+        });
+    }
+
+    if (googlePayload.aud !== googleClientId) {
+        return res.status(401).json({
+            error: 'Invalid audience',
+            details: 'Token audience does not match this application'
+        });
+    }
+
+    if (googlePayload.email_verified !== 'true') {
+        return res.status(403).json({
+            error: 'Email not verified',
+            details: 'Google account email must be verified'
+        });
+    }
+
+    const email = (googlePayload.email || '').trim().toLowerCase();
+    if (!email) {
+        return res.status(400).json({
+            error: 'Invalid profile',
+            details: 'Google account did not provide an email'
+        });
+    }
+
+    let patient = await Patient.findOne({ email });
+
+    if (!patient) {
+        const randomPassword = crypto.randomBytes(32).toString('hex');
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+        patient = new Patient({
+            name: googlePayload.name || email.split('@')[0],
+            email,
+            mobile: '0000000000',
+            address: 'OAuth signup - please update your profile',
+            password: hashedPassword,
+            profilePhoto: googlePayload.picture || '/images/default-patient.svg',
+            authProvider: 'google',
+            providerId: googlePayload.sub
+        });
+
+        await patient.save();
+    } else {
+        let shouldSave = false;
+
+        if (patient.authProvider !== 'google') {
+            patient.authProvider = 'google';
+            shouldSave = true;
+        }
+
+        if (!patient.providerId) {
+            patient.providerId = googlePayload.sub;
+            shouldSave = true;
+        }
+
+        if (googlePayload.picture && patient.profilePhoto === '/images/default-patient.svg') {
+            patient.profilePhoto = googlePayload.picture;
+            shouldSave = true;
+        }
+
+        if (shouldSave) {
+            await patient.save();
+        }
+    }
+
+    const token = generateToken(patient._id.toString(), 'patient');
+    const needsProfileCompletion =
+        patient.authProvider === 'google' &&
+        ((patient.mobile || '').trim() === '0000000000' || (patient.address || '').trim() === 'OAuth signup - please update your profile');
+
+    return res.status(200).json({
+        message: 'Google login successful',
+        token,
+        redirect: needsProfileCompletion ? '/patient/edit-profile' : '/patient/dashboard',
+        needsProfileCompletion
+    });
 });

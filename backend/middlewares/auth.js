@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Patient = require('../models/Patient');
 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mediquick-jwt-secret-key-2024';
@@ -60,6 +61,54 @@ const verifyPatient = (req, res, next) => {
             return next(error);
         }
     });
+};
+
+const isPatientProfileIncomplete = (patient) => {
+    if (!patient || patient.authProvider !== 'google') {
+        return false;
+    }
+
+    const mobile = (patient.mobile || '').trim();
+    const address = (patient.address || '').trim();
+
+    return !mobile || mobile === '0000000000' || !address || address === 'OAuth signup - please update your profile';
+};
+
+const requireCompletePatientProfile = async (req, res, next) => {
+    try {
+        if (!req.patientId) {
+            const error = new Error('Authentication required');
+            error.status = 401;
+            error.type = 'auth';
+            error.details = 'Patient authentication required';
+            return next(error);
+        }
+
+        const patient = await Patient.findById(req.patientId)
+            .select('authProvider mobile address')
+            .lean();
+
+        if (!patient) {
+            const error = new Error('Patient not found');
+            error.status = 401;
+            error.type = 'auth';
+            error.details = 'Please login again';
+            return next(error);
+        }
+
+        if (isPatientProfileIncomplete(patient)) {
+            return res.status(403).json({
+                error: 'Profile incomplete',
+                details: 'Please complete your profile before booking appointments or making payments',
+                code: 'PROFILE_INCOMPLETE',
+                redirect: '/patient/edit-profile'
+            });
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
 };
 
 // Middleware to verify doctor role
@@ -184,5 +233,6 @@ module.exports = {
     verifyEmployee,
     verifySupplier,
     verifyAuthenticatedUser,
+    requireCompletePatientProfile,
     JWT_SECRET
 };

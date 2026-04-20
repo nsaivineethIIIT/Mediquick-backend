@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../assets/css/AdminDoctorAnalytics.css';
+import '../../assets/css/AdminDashboard.css';
 import { getToken, removeToken } from '../../utils/authUtils';
 import { useAdmin } from '../../context/AdminContext';
 
 const AdminPatientAnalytics = () => {
-  const { admin } = useAdmin();
+  const { logout } = useAdmin();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -146,19 +147,53 @@ const AdminPatientAnalytics = () => {
 
   const selectedPatient = patients.find(p => p._id === selectedPatientId);
 
+  const renderSidebar = () => (
+    <nav className="dashboard-nav">
+      <div className="dashboard-brand">
+        <h2>MediQuick</h2>
+        <p>Clinical Admin</p>
+      </div>
+      <ul>
+        <li><Link to="/" className="nav-link home-link"><span className="nav-label">Home</span></Link></li>
+        <li><Link to="/admin/dashboard" className="nav-link"><span className="nav-label">Dashboard</span></Link></li>
+        <li><Link to="/admin/doctor-analytics" className="nav-link"><span className="nav-label">Doctor Analytics</span></Link></li>
+        <li><Link to="/admin/patient-analytics" className="nav-link active"><span className="nav-label">Patient Analytics</span></Link></li>
+        <li><Link to="/admin/search-data" className="nav-link"><span className="nav-label">Search Data</span></Link></li>
+        <li><Link to="/admin/profile" className="nav-link"><span className="nav-label">Profile</span></Link></li>
+        <li>
+          <button onClick={logout} className="nav-link logout" style={{ border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
+            <span className="nav-label">Logout</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+
   if (loading) {
     return (
-      <div className="admin-patient-analytics">
-        <div className="analytics-container">
-          <div className="loading">Loading patient analytics...</div>
+      <div className="admin-dashboard">
+        <div className="dashboard-container">
+          {renderSidebar()}
+          <main className="dashboard-content">
+            <section className="section">
+              <div className="analytics-container">
+                <div className="loading">Loading patient analytics...</div>
+              </div>
+            </section>
+          </main>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="admin-patient-analytics">
-      <div className="analytics-container">
+    <div className="admin-dashboard">
+      <div className="dashboard-container">
+        {renderSidebar()}
+        <main className="dashboard-content">
+          <section className="section">
+            <div className="admin-patient-analytics">
+              <div className="analytics-container">
         {/* Header */}
         <div className="analytics-header">
           <div className="header-left">
@@ -391,6 +426,10 @@ const AdminPatientAnalytics = () => {
             </>
           )}
         </div>
+      </div>
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   );

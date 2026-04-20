@@ -71,6 +71,17 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_URL;
 
+  const buildDocumentUrl = (documentPath, download = false) => {
+    if (!documentPath) return '';
+
+    const query = new URLSearchParams({ documentPath });
+    if (download) {
+      query.set('download', '1');
+    }
+
+    return `${BASE_URL}/employee/api/serve-document?${query.toString()}`;
+  };
+
   // Check if response is JSON before parsing
   const parseResponse = async (response) => {
     const contentType = response.headers.get('content-type');
@@ -535,12 +546,15 @@ const AdminDashboard = () => {
     setError('');
     fetchUsers();
     fetchSignins();
-    fetchAppointments();
-    fetchFinanceData();
-    fetchEarningsData();
-    fetchRevenueSummary();
+    dispatch(fetchAdminAppointments());
+    dispatch(fetchAdminFinance());
+    dispatch(fetchAdminEarnings());
+    dispatch(fetchAdminRevenueSummary());
     fetchMedicineFinanceData();
     fetchMedicineOrders();
+    fetchSupplierAnalytics();
+    fetchReviews();
+    fetchEmployeeRequests();
   };
 
   // Format currency
@@ -583,10 +597,15 @@ const AdminDashboard = () => {
       <div className="dashboard-container">
         {/* Navigation Sidebar */}
         <nav className="dashboard-nav">
+          <div className="dashboard-brand">
+            <h2>MediQuick</h2>
+          </div>
+
           <ul>
             <li>
               <Link to="/" className="nav-link home-link">
-                Home
+                <span className="nav-symbol">🏠</span>
+                <span className="nav-label">Home</span>
               </Link>
             </li>
             <li>
@@ -594,7 +613,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'users' ? 'active' : ''}
                 onClick={() => setActiveSection('users')}
               >
-                Manage Users
+                <span className="nav-symbol">👥</span>
+                <span className="nav-label">Users</span>
               </button>
             </li>
             <li>
@@ -602,7 +622,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'signins' ? 'active' : ''}
                 onClick={() => setActiveSection('signins')}
               >
-                Recent SignIns
+                <span className="nav-symbol">🔐</span>
+                <span className="nav-label">Sign-Ins</span>
               </button>
             </li>
             <li>
@@ -610,7 +631,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'appointments' ? 'active' : ''}
                 onClick={() => setActiveSection('appointments')}
               >
-                Appointments
+                <span className="nav-symbol">📅</span>
+                <span className="nav-label">Appointments</span>
               </button>
             </li>
             <li>
@@ -618,7 +640,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'finance' ? 'active' : ''}
                 onClick={() => setActiveSection('finance')}
               >
-                Appointment Finance
+                <span className="nav-symbol">💳</span>
+                <span className="nav-label">Finance</span>
               </button>
             </li>
              <li>
@@ -626,7 +649,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'medicine-finance' ? 'active' : ''}
                 onClick={() => setActiveSection('medicine-finance')}
               >
-                Medicine Finance
+                <span className="nav-symbol">💊</span>
+                <span className="nav-label">Medicine Finance</span>
               </button>
             </li>
             <li>
@@ -634,7 +658,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'supplier-analytics' ? 'active' : ''}
                 onClick={() => setActiveSection('supplier-analytics')}
               >
-                Supplier Analytics
+                <span className="nav-symbol">📊</span>
+                <span className="nav-label">Supplier Analytics</span>
               </button>
             </li>
             <li>
@@ -642,7 +667,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'earnings' ? 'active' : ''}
                 onClick={() => setActiveSection('earnings')}
               >
-                Earnings Reports
+                <span className="nav-symbol">💰</span>
+                <span className="nav-label">Earnings</span>
               </button>
             </li>
             <li>
@@ -650,7 +676,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'medicineOrders' ? 'active' : ''}
                 onClick={() => setActiveSection('medicineOrders')}
               >
-                Medicine Orders
+                <span className="nav-symbol">📦</span>
+                <span className="nav-label">Medicine Orders</span>
               </button>
             </li>
             <li>
@@ -658,7 +685,8 @@ const AdminDashboard = () => {
                 className={activeSection === 'reviews' ? 'active' : ''}
                 onClick={() => setActiveSection('reviews')}
               >
-                MediQuick Reviews
+                <span className="nav-symbol">⭐</span>
+                <span className="nav-label">Reviews</span>
               </button>
             </li>
             <li>
@@ -666,37 +694,38 @@ const AdminDashboard = () => {
                 className={activeSection === 'employeeApproval' ? 'active' : ''}
                 onClick={() => setActiveSection('employeeApproval')}
               >
-                Employee Approval
+                <span className="nav-symbol">✅</span>
+                <span className="nav-label">Approvals</span>
               </button>
             </li>
             <li>
               <Link to="/admin/doctor-analytics" className="nav-link">
-                📊 Doctor Analytics
+                <span className="nav-symbol">🩺</span>
+                <span className="nav-label">Doctor Analytics</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/patient-analytics" className="nav-link">
-                📈 Patient Analytics
+                <span className="nav-symbol">📈</span>
+                <span className="nav-label">Patient Analytics</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/search-data" className="nav-link">
-                Search Data
+                <span className="nav-symbol">🔎</span>
+                <span className="nav-label">Search Data</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/profile" className="nav-link">
-                <img 
-                  src="https://static.thenounproject.com/png/638636-200.png" 
-                  alt="Profile" 
-                  className="profile-icon"
-                />
-                Profile
+                <span className="nav-symbol">👤</span>
+                <span className="nav-label">Profile</span>
               </Link>
             </li>
             <li>
               <button onClick={handleLogout} className="nav-link logout" style={{ border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
-                Logout
+                <span className="nav-symbol">↩</span>
+                <span className="nav-label">Logout</span>
               </button>
             </li>
           </ul>
@@ -704,7 +733,17 @@ const AdminDashboard = () => {
 
         {/* Main Content */}
         <main className="dashboard-content">
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '14px' }}>
+          <div className="dashboard-topbar">
+            <div>
+              <h1>Dashboard Overview</h1>
+              <p>Manage operations, approvals, finance, and analytics in one place.</p>
+            </div>
+            <div className="dashboard-admin-chip">
+              <span>{admin?.name || 'Administrator'}</span>
+            </div>
+          </div>
+
+          <div className="dashboard-search-wrap">
             <DashboardGlobalSearch role="admin" />
           </div>
           {/* Error Display */}
@@ -1686,7 +1725,7 @@ const AdminDashboard = () => {
                   </div>
                 )}
 
-                <table>
+                <table className="employee-approval-table">
                   <thead>
                     <tr>
                       <th>Employee Name</th>
@@ -1714,34 +1753,54 @@ const AdminDashboard = () => {
                     ) : (
                       employeeRequests.map((employee, index) => (
                         <tr key={employee._id || index}>
-                          <td>{employee.name}</td>
-                          <td>{employee.email}</td>
+                          <td className="employee-name-cell">{employee.name}</td>
+                          <td className="employee-email-cell">{employee.email}</td>
                           <td>{employee.mobile}</td>
-                          <td>{employee.address}</td>
+                          <td className="employee-address-cell">{employee.address}</td>
                           <td>
                             {employee.profilePhoto ? (
-                              <a 
-                                href={employee.profilePhoto.startsWith('http') ? employee.profilePhoto : `${BASE_URL}${employee.profilePhoto}`} 
-                                className="view-pdf" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                              >
-                                View Photo
-                              </a>
+                              <div className="doc-action-group">
+                                <a 
+                                  href={buildDocumentUrl(employee.profilePhoto)} 
+                                  className="view-pdf" 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                >
+                                  View
+                                </a>
+                                <a 
+                                  href={buildDocumentUrl(employee.profilePhoto, true)} 
+                                  className="download-pdf"
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                >
+                                  Download
+                                </a>
+                              </div>
                             ) : (
                               <span className="no-document">No photo</span>
                             )}
                           </td>
                           <td>
                             {employee.documentPath ? (
-                              <a 
-                                href={employee.documentPath.startsWith('http') ? employee.documentPath : `${BASE_URL}${employee.documentPath}`} 
-                                className="view-pdf" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                              >
-                                View Document
-                              </a>
+                              <div className="doc-action-group">
+                                <a 
+                                  href={buildDocumentUrl(employee.documentPath)} 
+                                  className="view-pdf" 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                >
+                                  View
+                                </a>
+                                <a 
+                                  href={buildDocumentUrl(employee.documentPath, true)} 
+                                  className="download-pdf"
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                >
+                                  Download
+                                </a>
+                              </div>
                             ) : (
                               <span className="no-document">No document</span>
                             )}

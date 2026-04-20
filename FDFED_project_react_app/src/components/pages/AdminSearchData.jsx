@@ -12,12 +12,14 @@ import {
   selectAdminLoading
 } from '../../store/slices/adminSlice';
 import { authenticatedFetch } from '../../utils/authUtils';
-import Header from '../common/Header';
 import '../../assets/css/AdminSearchData.css';
+import '../../assets/css/AdminDashboard.css';
+import { useAdmin } from '../../context/AdminContext';
 
 const AdminSearchData = () => {
   const dispatch = useDispatch();
   const BASE_URL = import.meta.env.VITE_API_URL;
+  const { logout } = useAdmin();
   
   // Redux state
   const appointments = useSelector(selectAdminAppointments);
@@ -162,11 +164,36 @@ const AdminSearchData = () => {
     setIsNavOpen(!isNavOpen);
   };
 
-  return (
-    <div className="admin-search-data">
-      <Header />
+  const renderSidebar = () => (
+    <nav className="dashboard-nav">
+      <div className="dashboard-brand">
+        <h2>MediQuick</h2>
+        <p>Clinical Admin</p>
+      </div>
+      <ul>
+        <li><Link to="/" className="nav-link home-link"><span className="nav-label">Home</span></Link></li>
+        <li><Link to="/admin/dashboard" className="nav-link"><span className="nav-label">Dashboard</span></Link></li>
+        <li><Link to="/admin/doctor-analytics" className="nav-link"><span className="nav-label">Doctor Analytics</span></Link></li>
+        <li><Link to="/admin/patient-analytics" className="nav-link"><span className="nav-label">Patient Analytics</span></Link></li>
+        <li><Link to="/admin/search-data" className="nav-link active"><span className="nav-label">Search Data</span></Link></li>
+        <li><Link to="/admin/profile" className="nav-link"><span className="nav-label">Profile</span></Link></li>
+        <li>
+          <button onClick={logout} className="nav-link logout" style={{ border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}>
+            <span className="nav-label">Logout</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
 
-      <div className="search-data-container">
+  return (
+    <div className="admin-dashboard">
+      <div className="dashboard-container">
+        {renderSidebar()}
+        <main className="dashboard-content">
+          <section className="section">
+            <div className="admin-search-data">
+              <div className="search-data-container">
         <div className="search-data-header">
           <Link to="/admin/dashboard" className="search-data-back">← Back to Dashboard</Link>
           <h1>Admin Search Data</h1>
@@ -713,6 +740,10 @@ const AdminSearchData = () => {
             </table>
           </div>
         </section>
+      </div>
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   );

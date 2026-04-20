@@ -263,21 +263,44 @@ const uploadSignup = multer({
     }
 });
 
-// Helper function to convert Cloudinary path to proper full URL
+// Helper function to normalize and resolve document/profile URLs.
 const getCloudinaryUrl = (path, filename) => {
     if (!path) return null;
-    
-    // If already a full URL, return as-is
+
+    // If already a full URL, return as-is.
     if (path.startsWith('http')) {
         return path;
     }
-    
-    // If it's just a public_id, construct the full URL
+
+    const normalized = String(path).replace(/\\/g, '/').trim();
+    if (!normalized) return null;
+
+    // Preserve local static upload paths.
+    if (normalized.startsWith('/uploads/')) {
+        return normalized;
+    }
+    if (normalized.startsWith('uploads/')) {
+        return `/${normalized}`;
+    }
+
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const ext = filename ? filename.split('.').pop().toLowerCase() : 'pdf';
-    
-    // Ensure proper format for download
-    return `https://res.cloudinary.com/${cloudName}/image/upload/${path}.${ext}`;
+    const cleanedPath = normalized.replace(/^\/+/, '');
+
+    const lastSegment = cleanedPath.split('/').pop() || '';
+    const extFromPath = lastSegment.includes('.')
+        ? (lastSegment.split('.').pop() || '').toLowerCase()
+        : '';
+    const extFromFilename = filename && filename.includes('.')
+        ? (filename.split('.').pop() || '').toLowerCase()
+        : '';
+    const ext = extFromPath || extFromFilename;
+
+    const hasExt = lastSegment.includes('.');
+    const finalPath = hasExt || !ext ? cleanedPath : `${cleanedPath}.${ext}`;
+    const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'];
+    const resourceType = imageExts.includes(ext) ? 'image' : 'raw';
+
+    return `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/${finalPath}`;
 };
 
 module.exports = { 

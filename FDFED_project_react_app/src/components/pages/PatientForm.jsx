@@ -214,6 +214,8 @@ const PatientForm = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchResults, setSearchResults] = useState({ medicines: [], doctors: [] });
   const searchRef = useRef(null);
+  const googleButtonRef = useRef(null);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
     const previousRootFontSize = document.documentElement.style.fontSize;
@@ -237,6 +239,84 @@ const PatientForm = () => {
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
+
+  const handleGoogleCredential = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      setMessage({ type: 'error', text: 'Google sign-in failed. Please try again.' });
+      return;
+    }
+
+    try {
+      setMessage({ type: 'success', text: 'Verifying Google account...' });
+      const API = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API}/patient/oauth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: credentialResponse.credential }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        if (result.token) setToken(result.token, 'patient');
+        setMessage({ type: 'success', text: 'Google login successful! Redirecting...' });
+        setTimeout(() => {
+          window.location.href = result.redirect || '/patient/dashboard';
+        }, 1000);
+      } else {
+        setMessage({
+          type: 'error',
+          text: `${result.error}${result.details ? ': ' + result.details : ''}`
+        });
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      setMessage({ type: 'error', text: 'Google login failed. Please try again.' });
+    }
+  };
+
+  useEffect(() => {
+    if (!isLogin || !googleClientId || !googleButtonRef.current) return;
+
+    const renderGoogleButton = () => {
+      if (!window.google?.accounts?.id || !googleButtonRef.current) return;
+
+      googleButtonRef.current.innerHTML = '';
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleGoogleCredential,
+        ux_mode: 'popup'
+      });
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'pill',
+        width: 320
+      });
+    };
+
+    const scriptId = 'google-identity-services';
+    let script = document.getElementById(scriptId);
+
+    if (window.google?.accounts?.id) {
+      renderGoogleButton();
+      return;
+    }
+
+    if (!script) {
+      script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.id = scriptId;
+      document.head.appendChild(script);
+    }
+
+    script.addEventListener('load', renderGoogleButton);
+    return () => {
+      script?.removeEventListener('load', renderGoogleButton);
+    };
+  }, [isLogin, googleClientId]);
 
   useEffect(() => {
     const query = searchText.trim();
@@ -572,6 +652,14 @@ const PatientForm = () => {
                     </div>
 
                     <button type="submit" className="pf-submit-btn">Login to Portal</button>
+
+                    <div className="pf-oauth-divider"><span>or</span></div>
+                    {googleClientId ? (
+                      <div ref={googleButtonRef} className="pf-google-btn-host" />
+                    ) : (
+                      <p className="pf-terms-text">Google sign-in is unavailable. Configure VITE_GOOGLE_CLIENT_ID.</p>
+                    )}
+
                     <p className="pf-terms-text">
                       New here? <span className="pf-link" onClick={toggleForm}>Create your patient account</span>
                     </p>

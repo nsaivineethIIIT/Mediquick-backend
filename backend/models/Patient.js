@@ -16,6 +16,12 @@ const patientSchema = new mongoose.Schema({
     mobile: { type: String, required: true },
     address: { type: String, required: true },
     password: { type: String, required: true },
+    authProvider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
+    providerId: { type: String },
     dateOfBirth: { type: Date },
     gender: { 
         type: String, 

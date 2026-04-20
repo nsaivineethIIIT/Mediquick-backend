@@ -9,7 +9,7 @@ const medicineController = require('../controllers/medicineController');
 const cartController = require('../controllers/cartController');
 const checkoutController = require('../controllers/checkoutController');
 const { uploadBlog, uploadProfile } = require('../middlewares/upload');
-const { verifyPatient } = require('../middlewares/auth');
+const { verifyPatient, requireCompletePatientProfile } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -193,6 +193,7 @@ router.post('/signup', patientController.signup);
 router.post('/signup/verify-otp', patientController.verifySignupOtp);
 router.post('/signup/resend-otp', patientController.resendSignupOtp);
 router.post('/login', patientController.login); 
+router.post('/oauth/google', patientController.googleOauthLogin);
 router.get('/form', patientController.getForm); 
 
 /**
@@ -1016,7 +1017,7 @@ router.get('/prescriptions/download/:id', verifyPatient, patientController.downl
  */
 
 // Cart
-router.post('/api/add-to-cart', verifyPatient, cartController.addToCart);
+router.post('/api/add-to-cart', verifyPatient, requireCompletePatientProfile, cartController.addToCart);
 router.get('/cart', verifyPatient, cartController.getCart);
 router.get('/api/cart', verifyPatient, cartController.getCartAPI);
 router.post('/api/cart/update', verifyPatient, cartController.updateItem);
@@ -1139,14 +1140,14 @@ router.get('/api/cart/count', verifyPatient, cartController.getCartCount);
 
 // Checkout
 router.get('/checkout', verifyPatient, checkoutController.getCheckout);
-router.post('/checkout', verifyPatient, checkoutController.postCheckout);
+router.post('/checkout', verifyPatient, requireCompletePatientProfile, checkoutController.postCheckout);
 
 router.get('/api/checkout-data', verifyPatient, checkoutController.getCheckoutData);
 router.get('/api/session-order-details', verifyPatient, checkoutController.getSessionOrderDetails);
 
 router.get('/order-details', verifyPatient, checkoutController.getOrderDetails);
 router.get('/payment', verifyPatient, checkoutController.getPaymentPage);
-router.post('/process-payment', verifyPatient, checkoutController.processPayment);
+router.post('/process-payment', verifyPatient, requireCompletePatientProfile, checkoutController.processPayment);
 router.get('/order-success', verifyPatient, checkoutController.getOrderSuccess);
 
 module.exports = router;

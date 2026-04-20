@@ -27,7 +27,38 @@ const EmployeeDashboard = () => {
   const [activeSection, setActiveSection] = useState('pendingDoctors');
   const navigate = useNavigate();
 
-  // Function to download document directly from Cloudinary
+  const buildDocumentUrl = (documentPath, download = false) => {
+    if (!documentPath) return '';
+
+    const query = new URLSearchParams({ documentPath });
+    if (download) {
+      query.set('download', '1');
+    }
+
+    return `${BASE_URL}/employee/api/serve-document?${query.toString()}`;
+  };
+
+  const previewDocument = (documentPath) => {
+    const url = buildDocumentUrl(documentPath, false);
+    if (!url) {
+      alert('No document available');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const viewDocument = (documentPath) => {
+    const url = buildDocumentUrl(documentPath, true);
+    if (!url) {
+      alert('No document available');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // Function to download document through backend proxy
   const downloadDocument = (documentPath) => {
     if (!documentPath) {
       alert('No document available');
@@ -35,10 +66,7 @@ const EmployeeDashboard = () => {
     }
     
     try {
-      // Add download parameter to Cloudinary URL to force download
-      const downloadUrl = documentPath.includes('?') 
-        ? `${documentPath}&dl=1` 
-        : `${documentPath}?dl=1`;
+      const downloadUrl = buildDocumentUrl(documentPath, true);
       
       console.log('Downloading from:', downloadUrl);
       
@@ -52,7 +80,7 @@ const EmployeeDashboard = () => {
     } catch (error) {
       console.error('Error downloading document:', error);
       // Fallback: open in new tab
-      window.open(documentPath, '_blank', 'noopener,noreferrer');
+      previewDocument(documentPath);
     }
   };
 
@@ -846,20 +874,36 @@ const EmployeeDashboard = () => {
                   <td><span className="reg-number">{doctor.registrationNumber}</span></td>
                   <td>
                     {doctor.documentPath ? (
-                      <button
-                        className="view-doc-link"
-                        onClick={() => downloadDocument(doctor.documentPath)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                          font: 'inherit',
-                          color: '#28a745'
-                        }}
-                      >
-                        <i className="fas fa-download"></i> Download
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          className="view-doc-link"
+                          onClick={() => previewDocument(doctor.documentPath)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            font: 'inherit',
+                            color: '#007bff'
+                          }}
+                        >
+                          <i className="fas fa-eye"></i> View
+                        </button>
+                        <button
+                          className="view-doc-link"
+                          onClick={() => downloadDocument(doctor.documentPath)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            font: 'inherit',
+                            color: '#28a745'
+                          }}
+                        >
+                          <i className="fas fa-download"></i> Download
+                        </button>
+                      </div>
                     ) : (
                       <span className="no-document">No document</span>
                     )}
@@ -977,7 +1021,7 @@ const EmployeeDashboard = () => {
                         </button>
                         <button
                           className="view-doc-link"
-                          onClick={() => viewDocument(supplier.profilePhoto)}
+                          onClick={() => downloadDocument(supplier.profilePhoto)}
                           style={{
                             background: 'none',
                             border: 'none',
@@ -996,20 +1040,36 @@ const EmployeeDashboard = () => {
                   </td>
                   <td>
                     {supplier.documentPath ? (
-                      <button
-                        className="view-doc-link"
-                        onClick={() => downloadDocument(supplier.documentPath)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                          font: 'inherit',
-                          color: '#28a745'
-                        }}
-                      >
-                        <i className="fas fa-download"></i> Download
-                      </button>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          className="view-doc-link"
+                          onClick={() => previewDocument(supplier.documentPath)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            font: 'inherit',
+                            color: '#007bff'
+                          }}
+                        >
+                          <i className="fas fa-eye"></i> View
+                        </button>
+                        <button
+                          className="view-doc-link"
+                          onClick={() => downloadDocument(supplier.documentPath)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            font: 'inherit',
+                            color: '#28a745'
+                          }}
+                        >
+                          <i className="fas fa-download"></i> Download
+                        </button>
+                      </div>
                     ) : (
                       <span className="no-document">No document</span>
                     )}

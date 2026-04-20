@@ -462,6 +462,37 @@
     transform: none;
 }
 
+.pf-oauth-divider {
+    position: relative;
+    text-align: center;
+    color: #727785;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin: 0.2rem 0;
+}
+
+.pf-oauth-divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(194, 198, 214, 0.55);
+}
+
+.pf-oauth-divider span {
+    position: relative;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0 0.7rem;
+}
+
+.pf-google-btn-host {
+    display: flex;
+    justify-content: center;
+    min-height: 44px;
+}
+
 .pf-terms-text,
 .pf-help-text,
 .pf-back-text {

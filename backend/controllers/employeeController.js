@@ -7,12 +7,242 @@ const Appointment = require('../models/Appointment');
 const Order = require('../models/Order');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const cloudinary = require('cloudinary').v2;
 const { EMPLOYEE_SECURITY_CODE } = require('../constants/constants');
 const { generateToken } = require('../middlewares/auth');
 const { getCloudinaryUrl } = require('../middlewares/upload');
 
 const {checkEmailExists, checkMobileExists} = require('../utils/utils');
 const asyncHandler = require('../middlewares/asyncHandler');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const parseCloudinaryAssetFromUrl = (url) => {
+    try {
+        const parsed = new URL(url);
+        if (!parsed.hostname.includes('res.cloudinary.com')) return null;
+
+        const parts = parsed.pathname.split('/').filter(Boolean);
+        // Expected: /<cloud_name>/<resource_type>/upload/<transforms...>/<version?>/<public_id>
+        if (parts.length < 4) return null;
+
+        const resourceType = parts[1];
+        const uploadIndex = parts.indexOf('upload');
+        if (uploadIndex === -1 || uploadIndex + 1 >= parts.length) return null;
+
+        const tail = parts.slice(uploadIndex + 1);
+        const versionRegex = /^v\d+$/;
+
+        // Skip transformation segments until a version/public_id section starts.
+        let startIndex = tail.findIndex(seg => versionRegex.test(seg));
+        if (startIndex === -1) {
+            startIndex = tail.findIndex(seg => seg.includes('.'));
+            if (startIndex === -1) {
+                startIndex = 0;
+            }
+        } else {
+            startIndex += 1;
+        }
+
+        const publicSegments = tail.slice(startIndex).filter(Boolean);
+        if (!publicSegments.length) return null;
+
+        const last = publicSegments[publicSegments.length - 1];
+        const dotIndex = last.lastIndexOf('.');
+        const format = dotIndex > -1 ? last.substring(dotIndex + 1).toLowerCase() : undefined;
+        if (dotIndex > -1) {
+            publicSegments[publicSegments.length - 1] = last.substring(0, dotIndex);
+        }
+
+        const publicId = publicSegments.join('/');
+        if (!publicId) return null;
+
+        return { resourceType, publicId, format };
+    } catch (err) {
+        return null;
+    }
+};
+
+const buildSignedCloudinaryUrl = (url, asAttachment = false) => {
+    const asset = parseCloudinaryAssetFromUrl(url);
+    if (!asset) return null;
+
+    const options = {
+        resource_type: asset.resourceType || 'image',
+        type: 'upload',
+        secure: true,
+        sign_url: true
+    };
+
+    if (asset.format) {
+        options.format = asset.format;
+    }
+
+    if (asAttachment) {
+        options.flags = 'attachment';
+    }
+
+    return cloudinary.url(asset.publicId, options);
+};
+
+const buildCloudinaryCandidateUrls = (url, asAttachment = false) => {
+    const asset = parseCloudinaryAssetFromUrl(url);
+    if (!asset) return [];
+
+    const resourceType = asset.resourceType || 'image';
+    const baseOptions = {
+        resource_type: resourceType,
+        secure: true,
+        sign_url: true
+    };
+
+    if (asset.format) {
+        baseOptions.format = asset.format;
+    }
+
+    if (asAttachment) {
+        baseOptions.flags = 'attachment';
+    }
+
+    const candidates = [];
+    ['upload', 'authenticated', 'private'].forEach((deliveryType) => {
+        candidates.push(
+            cloudinary.url(asset.publicId, {
+                ...baseOptions,
+                type: deliveryType
+            })
+        );
+    });
+
+    if (asset.format) {
+        try {
+            candidates.push(
+                cloudinary.utils.private_download_url(asset.publicId, asset.format, {
+                    resource_type: resourceType,
+                    type: 'upload',
+                    attachment: asAttachment
+                })
+            );
+            candidates.push(
+                cloudinary.utils.private_download_url(asset.publicId, asset.format, {
+                    resource_type: resourceType,
+                    type: 'authenticated',
+                    attachment: asAttachment
+                })
+            );
+            candidates.push(
+                cloudinary.utils.private_download_url(asset.publicId, asset.format, {
+                    resource_type: resourceType,
+                    type: 'private',
+                    attachment: asAttachment
+                })
+            );
+
+            // Some records are stored as image PDFs; also test raw download API path.
+            if (resourceType !== 'raw') {
+                candidates.push(
+                    cloudinary.utils.private_download_url(asset.publicId, asset.format, {
+                        resource_type: 'raw',
+                        type: 'upload',
+                        attachment: asAttachment
+                    })
+                );
+            }
+        } catch (err) {
+            // Ignore utility-level errors and proceed with other candidates.
+        }
+    }
+
+    return candidates.filter(Boolean);
+};
+
+const findReachableCloudinaryUrl = async (url, asAttachment = false) => {
+    const candidates = buildCloudinaryCandidateUrls(url, asAttachment);
+    if (!candidates.length) {
+        return url;
+    }
+
+    for (const candidate of candidates) {
+        try {
+            const response = await fetch(candidate, {
+                method: 'GET',
+                redirect: 'follow',
+                headers: {
+                    Range: 'bytes=0-0'
+                }
+            });
+            if (response.status >= 200 && response.status < 400) {
+                return candidate;
+            }
+        } catch (err) {
+            // Try the next candidate.
+        }
+    }
+
+    // Fall back to the first signed candidate even if HEAD probes fail.
+    return candidates[0];
+};
+
+const fetchCloudinaryAsset = async (url, asAttachment = false) => {
+    const candidates = buildCloudinaryCandidateUrls(url, asAttachment);
+    if (!candidates.length) {
+        return null;
+    }
+
+    for (const candidate of candidates) {
+        try {
+            const response = await fetch(candidate, { method: 'GET', redirect: 'follow' });
+            if (response.ok) {
+                return { response, sourceUrl: candidate };
+            }
+        } catch (err) {
+            // Try the next candidate.
+        }
+    }
+
+    return null;
+};
+
+const resolveDocumentAccessUrl = (documentPath, req, fallbackFilename = 'document.pdf') => {
+    if (!documentPath) return null;
+
+    const normalized = String(documentPath).replace(/\\/g, '/').trim();
+    if (!normalized) return null;
+
+    if (normalized.startsWith('http')) {
+        if (normalized.includes('res.cloudinary.com')) {
+            try {
+                const parsed = new URL(normalized);
+                parsed.searchParams.delete('dl');
+
+                return parsed.toString();
+            } catch (err) {
+                const stripped = normalized.replace(/([?&])dl=1(&|$)/, (match, p1, p2) => {
+                    if (p1 === '?' && p2) return '?';
+                    if (p1 === '?' && !p2) return '';
+                    if (p1 === '&' && p2) return '&';
+                    return '';
+                }).replace(/[?&]$/, '');
+                return stripped;
+            }
+        }
+        return normalized;
+    }
+
+    const localPath = normalized.startsWith('/uploads/')
+        ? normalized
+        : (normalized.startsWith('uploads/') ? `/${normalized}` : null);
+
+    if (localPath) {
+        return `${req.protocol}://${req.get('host')}${localPath}`;
+    }
+
+    return getCloudinaryUrl(normalized, fallbackFilename);
+};
 
 /**
  * @swagger
@@ -1552,18 +1782,14 @@ exports.getDocumentURL = asyncHandler(async (req, res) => {
             });
         }
 
-        // If documentPath is already a full Cloudinary URL, use it directly
-        if (documentPath.startsWith('http')) {
-            return res.status(200).json({
-                success: true,
-                url: documentPath
+        const url = resolveDocumentAccessUrl(documentPath, req, 'document.pdf');
+
+        if (!url) {
+            return res.status(400).json({
+                error: 'Bad Request',
+                message: 'Invalid document path'
             });
         }
-
-        // Otherwise, construct the Cloudinary URL
-        const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-        const ext = documentPath.split('.').pop().toLowerCase();
-        const url = `https://res.cloudinary.com/${cloudName}/image/upload/${documentPath}`;
 
         res.status(200).json({
             success: true,
@@ -1581,7 +1807,7 @@ exports.getDocumentURL = asyncHandler(async (req, res) => {
 // Proxy endpoint to serve documents from Cloudinary with proper headers
 exports.serveDocument = asyncHandler(async (req, res) => {
     try {
-        const { documentPath } = req.query;
+        const { documentPath, download } = req.query;
 
         if (!documentPath) {
             return res.status(400).json({
@@ -1590,52 +1816,50 @@ exports.serveDocument = asyncHandler(async (req, res) => {
             });
         }
 
-        // Determine the actual URL to fetch
-        let documentUrl = documentPath;
-        if (!documentUrl.startsWith('http')) {
-            const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-            documentUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${documentPath}`;
-        }
+        let documentUrl = resolveDocumentAccessUrl(documentPath, req, 'document.pdf');
 
-        console.log('Fetching document from:', documentUrl);
-
-        // Fetch the document from Cloudinary
-        const nodeFetch = require('node-fetch');
-        const fetchResponse = await nodeFetch(documentUrl);
-
-        if (!fetchResponse.ok) {
-            console.error('Cloudinary error:', fetchResponse.status, fetchResponse.statusText);
-            return res.status(fetchResponse.status).json({
-                error: 'Document fetch failed',
-                message: `Failed to retrieve document: ${fetchResponse.statusText}`
+        if (!documentUrl || !documentUrl.startsWith('http')) {
+            return res.status(400).json({
+                error: 'Bad Request',
+                message: 'Invalid document path'
             });
         }
 
-        // Get the file extension to determine content type
-        const ext = documentPath.split('.').pop().toLowerCase();
-        let contentType = 'application/octet-stream';
-        
-        if (ext === 'pdf') {
-            contentType = 'application/pdf';
-        } else if (['jpg', 'jpeg'].includes(ext)) {
-            contentType = 'image/jpeg';
-        } else if (ext === 'png') {
-            contentType = 'image/png';
-        } else if (ext === 'gif') {
-            contentType = 'image/gif';
-        } else if (ext === 'doc' || ext === 'docx') {
-            contentType = 'application/msword';
+        const shouldDownload = download === '1' || download === 'true';
+
+        if (documentUrl.includes('res.cloudinary.com')) {
+            const proxiedAsset = await fetchCloudinaryAsset(documentUrl, shouldDownload);
+            if (proxiedAsset) {
+                const { response } = proxiedAsset;
+                const contentType = response.headers.get('content-type') || 'application/octet-stream';
+                const contentLength = response.headers.get('content-length');
+                const contentDisposition = response.headers.get('content-disposition');
+
+                res.setHeader('Content-Type', contentType);
+                if (contentLength) {
+                    res.setHeader('Content-Length', contentLength);
+                }
+
+                if (shouldDownload) {
+                    res.setHeader('Content-Disposition', contentDisposition || 'attachment');
+                } else if (contentDisposition) {
+                    res.setHeader('Content-Disposition', contentDisposition.replace(/^attachment/i, 'inline'));
+                }
+
+                const buffer = Buffer.from(await response.arrayBuffer());
+                return res.status(200).send(buffer);
+            }
+
+            const signedUrl = buildSignedCloudinaryUrl(documentUrl, shouldDownload);
+            if (signedUrl) {
+                documentUrl = await findReachableCloudinaryUrl(signedUrl, shouldDownload);
+            } else if (shouldDownload && documentUrl.includes('/upload/') && !documentUrl.includes('/upload/fl_attachment/')) {
+                // Fallback for unexpected Cloudinary URL shapes.
+                documentUrl = documentUrl.replace('/upload/', '/upload/fl_attachment/');
+            }
         }
 
-        // Set response headers for file display
-        const fileName = documentPath.split('/').pop();
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-        res.setHeader('Cache-Control', 'public, max-age=3600');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-
-        // Pipe the response
-        fetchResponse.body.pipe(res);
+        return res.redirect(302, documentUrl);
     } catch (err) {
         console.error('Error serving document:', err.message);
         res.status(500).json({

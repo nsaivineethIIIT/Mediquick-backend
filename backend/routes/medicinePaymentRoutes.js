@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const medicinePaymentController = require('../controllers/medicinePaymentController');
-const { verifyPatient } = require('../middlewares/auth');
+const { verifyPatient, requireCompletePatientProfile } = require('../middlewares/auth');
 
-router.post('/create-order', verifyPatient, medicinePaymentController.createOrder);
-router.post('/verify', verifyPatient, medicinePaymentController.verifyAndCreateOrder);
+router.post('/create-order', verifyPatient, requireCompletePatientProfile, medicinePaymentController.createOrder);
+router.post('/verify', verifyPatient, requireCompletePatientProfile, medicinePaymentController.verifyAndCreateOrder);
 
 module.exports = router;

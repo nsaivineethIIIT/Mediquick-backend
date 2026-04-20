@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useAdmin } from '../../context/AdminContext';
 import { getToken, removeToken } from '../../utils/authUtils';
-import '../../assets/css/AdminEditProfile.css';
-import '../../assets/css/ProfilePagesUnified.css';
+import Header from '../common/Header';
+import Footer from '../common/Footer';
+import '../../assets/css/EmployeeProfileModern.css';
 
-// --- Yup Validation Schema ---
 const adminEditSchema = yup.object().shape({
   name: yup
     .string()
@@ -30,20 +30,20 @@ const adminEditSchema = yup.object().shape({
     .min(5, 'Address must be at least 5 characters long')
 });
 
-// --- Component ---
 const AdminEditProfile = () => {
-  // Context hook to get admin data and update function
   const { admin, loading: contextLoading, error: contextError, updateAdmin, logout } = useAdmin();
-  
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
-  const [isNavOpen, setIsNavOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Initialize react-hook-form with yup resolver
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue
+  } = useForm({
     resolver: yupResolver(adminEditSchema),
-    mode: 'onChange', // Real-time validation
+    mode: 'onChange',
     defaultValues: {
       name: '',
       email: '',
@@ -52,7 +52,6 @@ const AdminEditProfile = () => {
     }
   });
 
-  // useEffect to populate form data from context using RHF's setValue
   useEffect(() => {
     if (admin) {
       setValue('name', admin.name || '');
@@ -60,73 +59,50 @@ const AdminEditProfile = () => {
       setValue('mobile', admin.mobile || '');
       setValue('address', admin.address || '');
     }
-    
-    // Display context loading error if any
+
     if (!contextLoading && contextError) {
-        setMessage({ 
-            text: `Error loading profile: ${contextError}`, 
-            type: 'error' 
-        });
+      setMessage({
+        text: `Error loading profile: ${contextError}`,
+        type: 'error'
+      });
     }
   }, [admin, contextLoading, contextError, setValue]);
 
-  // useEffect for header scroll is retained
-  useEffect(() => {
-    const handleScroll = () => {
-      const header = document.querySelector('header');
-      if (window.scrollY > 30) {
-        header.classList.add('header-active');
-      } else {
-        header.classList.remove('header-active');
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const toggleMobileNav = () => {
-    setIsNavOpen(!isNavOpen);
+  const handleLogout = () => {
+    logout();
   };
 
-  const closeProfile = () => {
-    navigate('/admin/profile');
-  };
-
-  // Helper function to parse response
   const parseResponse = async (response) => {
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
       return await response.json();
-    } else {
-      const text = await response.text();
-      // If it's HTML, check if it's a redirect
-      if (text.includes('redirect') || response.status === 302) {
-        return { redirect: '/admin/profile' };
-      }
-      throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}`);
     }
+
+    const text = await response.text();
+    if (text.includes('redirect') || response.status === 302) {
+      return { redirect: '/admin/profile' };
+    }
+
+    throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}`);
   };
 
-  // New submission handler using RHF's pattern
   const onFormSubmit = async (data) => {
     setMessage({ text: '', type: '' });
-    
+
     try {
       setSubmitting(true);
-      
-      // Data object is already validated by RHF/Yup
+
       const token = getToken('admin');
       const API = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API}/admin/update-profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(data) // Use validated RHF data
+        body: JSON.stringify(data)
       });
-      
+
       if (response.status === 401) {
         removeToken('admin');
         navigate('/admin/form');
@@ -135,16 +111,14 @@ const AdminEditProfile = () => {
 
       const result = await parseResponse(response);
 
-      if (response.ok && result.success) { // Check for success flag in JSON response
-        setMessage({ 
-          text: result.message || 'Profile updated successfully!', 
-          type: 'success' 
+      if (response.ok && result.success) {
+        setMessage({
+          text: result.message || 'Profile updated successfully!',
+          type: 'success'
         });
-        
-        // Update context state with new data
+
         updateAdmin(result.admin);
 
-        // Redirect after successful update
         setTimeout(() => {
           navigate('/admin/profile');
         }, 1500);
@@ -155,134 +129,131 @@ const AdminEditProfile = () => {
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      setMessage({ 
-        text: error.message || 'Failed to update profile. Please try again.', 
-        type: 'error' 
+      setMessage({
+        text: error.message || 'Failed to update profile. Please try again.',
+        type: 'error'
       });
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Use context loading state
   if (contextLoading) {
     return (
-        <div className="admin-edit-profile mq-unified-profile">
-            <section className="admin-edit-profile-section">
-                <div className="loading">
-                    <i className="fas fa-spinner fa-spin fa-2x"></i><br />
-                    <p>Loading profile data...</p>
-                </div>
-            </section>
+      <div className="employee-profile-modern employee-edit-profile-modern min-h-screen bg-slate-50 text-slate-900">
+        <div className="employee-header-shell">
+          <Header userType="admin" employee={admin} onLogout={handleLogout} showEmployeeProfileIcon={false} />
         </div>
+        <div className="flex min-h-[60vh] items-center justify-center text-slate-600 text-lg">Loading profile...</div>
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <div className="admin-edit-profile mq-unified-profile">
-      {/* Header */}
-      <header>
-        <Link to="/" className="logo"><span>M</span>edi<span>Q</span>uick</Link>
-        <nav className={`navbar ${isNavOpen ? 'nav-toggle' : ''}`}>
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About Us</Link></li>
-            <li><Link to="/faqs">FAQs</Link></li>
-            <li><Link to="/blogs">Blog</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
-          </ul>
-        </nav>
-        <div 
-          className={`fas ${isNavOpen ? 'fa-times' : 'fa-bars'}`} 
-          onClick={toggleMobileNav}
-        ></div>
-      </header>
+    <div className="employee-profile-modern employee-edit-profile-modern employee-edit-like-patient min-h-screen bg-slate-50 text-slate-900">
+      <div className="employee-header-shell">
+        <Header userType="admin" employee={admin} onLogout={handleLogout} showEmployeeProfileIcon={false} />
+      </div>
 
-      {/* Main Content */}
-      <section className="admin-edit-profile-section">
-        <div className="close-btn" onClick={closeProfile}>
-          <i className="fas fa-times"></i>
-        </div>
-        
-        {message.text && (
-          <div className={`message ${message.type}`}>
-            {message.text}
+      <main className="mx-auto w-full max-w-[1320px] px-6 py-10 md:px-10 md:py-12">
+        <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm md:p-12">
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">Edit Admin Profile</h1>
+            <p className="mt-2 text-sm md:text-base text-slate-600">Update your personal details.</p>
+            <button
+              type="button"
+              onClick={() => navigate('/admin/profile')}
+              className="mt-4 rounded-xl border-2 border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition"
+            >
+              Back to Profile
+            </button>
           </div>
-        )}
-        
-        {/* Use RHF's handleSubmit to wrap the submit function */}
-        <form className="profile-form" onSubmit={handleSubmit(onFormSubmit)}>
-            <div className="form-messages">
-              {/* RHF errors are shown per field, but general error remains here */}
-              {message.type === 'error' && (
-                <div id="errorMsg" className="error-message">
-                  {message.text}
-                </div>
-              )}
-              {message.type === 'success' && (
-                <div id="successMsg" className="success-message">
-                  {message.text}
-                </div>
-              )}
+
+          {message.type === 'success' && (
+            <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+              {message.text}
+            </div>
+          )}
+
+          {message.type === 'error' && (
+            <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+              {message.text}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-7">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Full Name</label>
+                <input
+                  type="text"
+                  {...register('name')}
+                  className={`w-full rounded-xl border px-4 py-3 text-sm md:text-base bg-white outline-none transition ${
+                    errors.name ? 'border-rose-400 focus:border-rose-500' : 'border-slate-300 focus:border-blue-600'
+                  }`}
+                />
+                {errors.name && <p className="mt-1 text-xs text-rose-600">{errors.name.message}</p>}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Email</label>
+                <input
+                  type="email"
+                  {...register('email')}
+                  className={`w-full rounded-xl border px-4 py-3 text-sm md:text-base bg-white outline-none transition ${
+                    errors.email ? 'border-rose-400 focus:border-rose-500' : 'border-slate-300 focus:border-blue-600'
+                  }`}
+                />
+                {errors.email && <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p>}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Mobile</label>
+                <input
+                  type="tel"
+                  {...register('mobile')}
+                  className={`w-full rounded-xl border px-4 py-3 text-sm md:text-base bg-white outline-none transition ${
+                    errors.mobile ? 'border-rose-400 focus:border-rose-500' : 'border-slate-300 focus:border-blue-600'
+                  }`}
+                />
+                {errors.mobile && <p className="mt-1 text-xs text-rose-600">{errors.mobile.message}</p>}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Address</label>
+                <textarea
+                  rows={3}
+                  {...register('address')}
+                  className={`w-full rounded-xl border px-4 py-3 text-sm md:text-base bg-white outline-none transition resize-y ${
+                    errors.address ? 'border-rose-400 focus:border-rose-500' : 'border-slate-300 focus:border-blue-600'
+                  }`}
+                />
+                {errors.address && <p className="mt-1 text-xs text-rose-600">{errors.address.message}</p>}
+              </div>
             </div>
 
-            <input
-              type="text"
-              id="name"
-              placeholder="Full Name"
-              // RHF Register
-              {...register('name')}
-              className={errors.name ? 'error-input' : ''}
-              required
-            />
-            {/* RHF Error Display */}
-            {errors.name && <span className="field-error">{errors.name.message}</span>}
-
-            <input
-              type="email"
-              id="email"
-              placeholder="Email"
-              // RHF Register
-              {...register('email')}
-              className={errors.email ? 'error-input' : ''}
-              required
-            />
-            {/* RHF Error Display */}
-            {errors.email && <span className="field-error">{errors.email.message}</span>}
-
-            <input
-              type="text"
-              id="mobile"
-              placeholder="Mobile"
-              // RHF Register
-              {...register('mobile')}
-              className={errors.mobile ? 'error-input' : ''}
-              required
-            />
-            {/* RHF Error Display */}
-            {errors.mobile && <span className="field-error">{errors.mobile.message}</span>}
-
-            <input
-              type="text"
-              id="address"
-              placeholder="Address"
-              // RHF Register
-              {...register('address')}
-              className={errors.address ? 'error-input' : ''}
-              required
-            />
-            {/* RHF Error Display */}
-            {errors.address && <span className="field-error">{errors.address.message}</span>}
-
-            <button 
-              type="submit" 
-              className="button"
-              disabled={submitting}
-            >
-              {submitting ? 'Saving...' : 'Save Changes'}
-            </button>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="rounded-xl bg-blue-700 px-7 py-3 text-sm md:text-base font-semibold text-white shadow-md hover:bg-blue-800 transition disabled:opacity-60"
+              >
+                {submitting ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/admin/profile')}
+                className="rounded-xl border-2 border-slate-300 bg-slate-50 px-7 py-3 text-sm md:text-base font-semibold text-slate-700 hover:bg-slate-100 transition"
+              >
+                Cancel
+              </button>
+            </div>
           </form>
-      </section>
+        </section>
+      </main>
+
+      <Footer />
     </div>
   );
 };

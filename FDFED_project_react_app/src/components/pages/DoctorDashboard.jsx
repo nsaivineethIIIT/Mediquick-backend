@@ -35,6 +35,8 @@ const DoctorDashboard = () => {
 
   const chatMessagesRef = useRef(null);
   const messagePollingIntervalRef = useRef(null);
+  const upcomingScrollRef = useRef(null);
+  const previousScrollRef = useRef(null);
 
   const allSlots = {
     morning: ["09:00 AM", "09:15 AM", "09:30 AM", "09:45 AM", "10:00 AM", "10:15 AM", "10:30 AM", "10:45 AM", "11:00 AM", "11:15 AM", "11:30 AM"],
@@ -624,6 +626,17 @@ const DoctorDashboard = () => {
     weekday: 'short'
   });
 
+  const scrollAppointmentList = (ref, direction) => {
+    const container = ref.current;
+    if (!container) return;
+
+    const amount = Math.max(320, Math.floor(container.clientWidth * 0.82));
+    container.scrollBy({
+      left: direction === 'left' ? -amount : amount,
+      behavior: 'smooth'
+    });
+  };
+
   const topUpcomingAppointments = upcomingAppointments;
   const topPreviousAppointments = previousAppointments;
 
@@ -726,7 +739,17 @@ const DoctorDashboard = () => {
           <section id="upcoming" className="doctor-section">
             <div className="doctor-section-header">
               <h2>Upcoming Appointments</h2>
-              <Link to="/doctor/schedule" className="doctor-view-all">View All Schedule</Link>
+              <div className="doctor-section-actions">
+                <div className="doctor-scroll-controls" aria-label="Scroll upcoming appointments">
+                  <button type="button" className="doctor-scroll-button" onClick={() => scrollAppointmentList(upcomingScrollRef, 'left')} aria-label="Scroll upcoming appointments left">
+                    ←
+                  </button>
+                  <button type="button" className="doctor-scroll-button" onClick={() => scrollAppointmentList(upcomingScrollRef, 'right')} aria-label="Scroll upcoming appointments right">
+                    →
+                  </button>
+                </div>
+                <Link to="/doctor/schedule" className="doctor-view-all">View All Schedule</Link>
+              </div>
             </div>
 
             {loadingAppointments ? (
@@ -734,61 +757,75 @@ const DoctorDashboard = () => {
             ) : topUpcomingAppointments.length === 0 ? (
               <p className="doctor-loading-text">No upcoming appointments found</p>
             ) : (
-              <div className="doctor-upcoming-grid">
-                {topUpcomingAppointments.map((appt) => (
-                  <div key={appt._id} className="doctor-appointment-card">
-                    <div className="doctor-appointment-head">
-                      <div className="doctor-patient-meta">
-                        <div className="doctor-avatar-initials">{getInitials(appt.patientId?.name)}</div>
-                        <div>
-                          <h4>{appt.patientId?.name || 'Unknown Patient'}</h4>
-                          <p>{appt.time} • {formatDisplayDate(appt.date)}</p>
+              <div className="doctor-horizontal-scroll" ref={upcomingScrollRef}>
+                <div className="doctor-upcoming-grid">
+                  {topUpcomingAppointments.map((appt) => (
+                    <div key={appt._id} className="doctor-appointment-card">
+                      <div className="doctor-appointment-head">
+                        <div className="doctor-patient-meta">
+                          <div className="doctor-avatar-initials">{getInitials(appt.patientId?.name)}</div>
+                          <div>
+                            <h4>{appt.patientId?.name || 'Unknown Patient'}</h4>
+                            <p>{appt.time} • {formatDisplayDate(appt.date)}</p>
+                          </div>
                         </div>
+                        <span className={`doctor-status doctor-status-${appt.status}`}>
+                          {appt.status}
+                        </span>
                       </div>
-                      <span className={`doctor-status doctor-status-${appt.status}`}>
-                        {appt.status}
-                      </span>
-                    </div>
 
-                    <div className="doctor-appointment-actions">
-                      {appt.status === 'pending' && (
-                        <>
-                          <button onClick={() => handleUpdateAppointment(appt._id, 'confirmed')}>Confirm</button>
-                          <button className="ghost" onClick={() => handleUpdateAppointment(appt._id, 'cancelled')}>Cancel</button>
-                        </>
-                      )}
-                      {appt.status === 'confirmed' && (
-                        <>
-                          <button onClick={() => handleUpdateAppointment(appt._id, 'completed')}>Mark Complete</button>
-                          <button className="ghost" onClick={() => openChat(appt._id)}>Chat</button>
-                        </>
-                      )}
-                      <button className="iconish" onClick={() => openNotesModal(appt)}>Notes</button>
+                      <div className="doctor-appointment-actions">
+                        {appt.status === 'pending' && (
+                          <>
+                            <button onClick={() => handleUpdateAppointment(appt._id, 'confirmed')}>Confirm</button>
+                            <button className="ghost" onClick={() => handleUpdateAppointment(appt._id, 'cancelled')}>Cancel</button>
+                          </>
+                        )}
+                        {appt.status === 'confirmed' && (
+                          <>
+                            <button onClick={() => handleUpdateAppointment(appt._id, 'completed')}>Mark Complete</button>
+                            <button className="ghost" onClick={() => openChat(appt._id)}>Chat</button>
+                          </>
+                        )}
+                        <button className="iconish" onClick={() => openNotesModal(appt)}>Notes</button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </section>
 
           <section id="previous" className="doctor-section">
-            <h2>Previous Appointments</h2>
+            <div className="doctor-section-header doctor-section-header-compact">
+              <h2>Previous Appointments</h2>
+              <div className="doctor-scroll-controls" aria-label="Scroll previous appointments">
+                <button type="button" className="doctor-scroll-button" onClick={() => scrollAppointmentList(previousScrollRef, 'left')} aria-label="Scroll previous appointments left">
+                  ←
+                </button>
+                <button type="button" className="doctor-scroll-button" onClick={() => scrollAppointmentList(previousScrollRef, 'right')} aria-label="Scroll previous appointments right">
+                  →
+                </button>
+              </div>
+            </div>
             {topPreviousAppointments.length === 0 ? (
               <p className="doctor-loading-text">No previous appointments found</p>
             ) : (
-              <div className="doctor-history-grid">
-                {topPreviousAppointments.map((appt) => (
-                  <div key={appt._id} className="doctor-history-card">
-                    <div className="doctor-history-left">
-                      <div className="doctor-avatar-initials compact">{getInitials(appt.patientId?.name)}</div>
-                      <div>
-                        <h5>{appt.patientId?.name || 'Unknown Patient'}</h5>
-                        <p>{formatDisplayDate(appt.date)}, {appt.time}</p>
+              <div className="doctor-horizontal-scroll" ref={previousScrollRef}>
+                <div className="doctor-history-grid">
+                  {topPreviousAppointments.map((appt) => (
+                    <div key={appt._id} className="doctor-history-card">
+                      <div className="doctor-history-left">
+                        <div className="doctor-avatar-initials compact">{getInitials(appt.patientId?.name)}</div>
+                        <div>
+                          <h5>{appt.patientId?.name || 'Unknown Patient'}</h5>
+                          <p>{formatDisplayDate(appt.date)}, {appt.time}</p>
+                        </div>
                       </div>
+                      <button onClick={() => openNotesModal(appt)}>View Notes</button>
                     </div>
-                    <button onClick={() => openNotesModal(appt)}>View Notes</button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </section>

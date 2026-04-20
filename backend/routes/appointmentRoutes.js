@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const appointmentController = require('../controllers/appointmentController');
-const { verifyPatient, verifyDoctor } = require('../middlewares/auth');
+const { verifyPatient, verifyDoctor, requireCompletePatientProfile } = require('../middlewares/auth');
 const {
     appointmentCreationLimiter,
     slotManagementLimiter,
@@ -70,7 +70,7 @@ const { uploadDoctorNotes } = require('../middlewares/upload');
  *       500:
  *         description: Server error
  */
-router.post('/', appointmentCreationLimiter, verifyPatient, validateAppointmentInput, preventPatientDoubleBooking, preventDoctorSlotDoubleBooking, appointmentController.postCreate); // Create a new appointment (patient)
+router.post('/', appointmentCreationLimiter, verifyPatient, requireCompletePatientProfile, validateAppointmentInput, preventPatientDoubleBooking, preventDoctorSlotDoubleBooking, appointmentController.postCreate); // Create a new appointment (patient)
 
 /**
  * @swagger
@@ -346,7 +346,7 @@ router.get('/api/blocked-slots', appointmentReadLimiter, appointmentController.g
  *       500:
  *         description: Server error
  */
-router.post('/appointments', appointmentCreationLimiter, verifyPatient, validateAppointmentInput, preventPatientDoubleBooking, preventDoctorSlotDoubleBooking, appointmentController.postCreate); // Create appointment (alternative)
+router.post('/appointments', appointmentCreationLimiter, verifyPatient, requireCompletePatientProfile, validateAppointmentInput, preventPatientDoubleBooking, preventDoctorSlotDoubleBooking, appointmentController.postCreate); // Create appointment (alternative)
 
 /**
  * @swagger
@@ -391,7 +391,7 @@ router.post('/appointments', appointmentCreationLimiter, verifyPatient, validate
  *       500:
  *         description: Server error
  */
-router.patch('/patient/:id/cancel', appointmentGeneralLimiter, verifyPatient, checkAppointmentOwnershipPatient, appointmentController.patchCancelByPatient);
+router.patch('/patient/:id/cancel', appointmentGeneralLimiter, verifyPatient, requireCompletePatientProfile, checkAppointmentOwnershipPatient, appointmentController.patchCancelByPatient);
 
 /**
  * @swagger
@@ -463,7 +463,7 @@ router.patch('/patient/:id/cancel', appointmentGeneralLimiter, verifyPatient, ch
  *       500:
  *         description: Server error
  */
-router.post('/:appointmentId/feedback', appointmentGeneralLimiter, verifyPatient, appointmentController.submitFeedback); // Submit feedback for completed appointment
+router.post('/:appointmentId/feedback', appointmentGeneralLimiter, verifyPatient, requireCompletePatientProfile, appointmentController.submitFeedback); // Submit feedback for completed appointment
 
 /**
  * @swagger
