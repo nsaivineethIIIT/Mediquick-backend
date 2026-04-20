@@ -23,10 +23,10 @@ const patientSchema = new mongoose.Schema({
     },
     providerId: { type: String },
     dateOfBirth: { type: Date },
-    gender: { 
-        type: String, 
-        enum: ['male', 'female', 'other'], 
-        lowercase: true 
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other'],
+        lowercase: true
     },
     addresses: [addressSchema],
     profilePhoto: { type: String, default: '/images/default-patient.svg' }

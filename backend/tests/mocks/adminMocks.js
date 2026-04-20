@@ -1,4 +1,5 @@
 // Mock data for admin analytics tests
+// Aligned with actual schemas and controllers
 const mongoose = require('mongoose');
 
 const mockAnalyticsData = {
@@ -101,7 +102,7 @@ const mockDetailedAnalytics = {
       quantity: 5,
       unitPrice: 150,
       totalAmount: 750,
-      paymentMethod: 'CARD',
+      paymentMethod: 'card', // Match Order Payment Method
       status: 'confirmed',
       date: '2026-04-15'
     }

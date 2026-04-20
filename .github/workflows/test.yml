@@ -60,53 +60,7 @@ jobs:
         SMTP_PASS: test-password
       run: npm test
 
-    - name: Run auth tests
-      working-directory: ./backend
-      env:
-        NODE_ENV: test
-        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
-        REDIS_HOST: localhost
-        REDIS_PORT: 6379
-        JWT_SECRET: test-secret-key
-        SMTP_USER: test@test.com
-        SMTP_PASS: test-password
-      run: npm run test:auth
 
-    - name: Run appointment tests
-      working-directory: ./backend
-      env:
-        NODE_ENV: test
-        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
-        REDIS_HOST: localhost
-        REDIS_PORT: 6379
-        JWT_SECRET: test-secret-key
-        SMTP_USER: test@test.com
-        SMTP_PASS: test-password
-      run: npm run test:appointment
-
-    - name: Run medicine tests
-      working-directory: ./backend
-      env:
-        NODE_ENV: test
-        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
-        REDIS_HOST: localhost
-        REDIS_PORT: 6379
-        JWT_SECRET: test-secret-key
-        SMTP_USER: test@test.com
-        SMTP_PASS: test-password
-      run: npm run test:medicine
-
-    - name: Run admin tests
-      working-directory: ./backend
-      env:
-        NODE_ENV: test
-        MONGODB_URI: mongodb://admin:admin123@localhost:27017/mediquick
-        REDIS_HOST: localhost
-        REDIS_PORT: 6379
-        JWT_SECRET: test-secret-key
-        SMTP_USER: test@test.com
-        SMTP_PASS: test-password
-      run: npm run test:admin
 
     - name: Generate coverage report
       working-directory: ./backend

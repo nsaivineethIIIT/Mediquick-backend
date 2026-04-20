@@ -1,4 +1,8 @@
 // Mock data for appointment tests
+// Aligned with actual Appointment schema in /backend/models/Appointment.js
+// modeOfPayment enum: ['credit-card', 'upi', 'net-banking', 'wallet', 'cash', null]
+// status enum: ['pending', 'confirmed', 'completed', 'cancelled', 'blocked']
+// type enum: ['online', 'offline']
 const mongoose = require('mongoose');
 
 const mockAppointmentData = {
@@ -9,7 +13,7 @@ const mockAppointmentData = {
     time: '10:00 AM',
     type: 'online',
     notes: 'Follow-up consultation',
-    modeOfPayment: 'card',
+    modeOfPayment: 'credit-card',   // matches Appointment schema enum
     consultationFee: 500,
     status: 'pending'
   },
@@ -20,15 +24,15 @@ const mockAppointmentData = {
     time: '02:00 PM',
     type: 'offline',
     notes: 'General checkup',
-    modeOfPayment: 'upi',
+    modeOfPayment: 'upi',           // matches Appointment schema enum
     consultationFee: 600,
     status: 'confirmed'
   },
   invalid: {
     doctorId: 'invalid-id',
-    patientId: '', // Missing
+    patientId: '',                  // Missing
     date: 'invalid-date',
-    time: '', // Missing
+    time: '',                       // Missing
     type: 'invalid-type'
   },
   blockedSlot: {
