@@ -1650,7 +1650,7 @@ exports.getDoctorsOffline = asyncHandler(async (req, res) => {
         }
 
         // STEP 2: If not in cache, fetch from database
-        const doctors = await Doctor.find({ onlineStatus: 'offline' });
+        const doctors = await Doctor.find({ onlineStatus: 'offline', isApproved: true });
 
         // Transform the data for the frontend with ratings
         const doctorsData = await Promise.all(doctors.map(async (doc) => {

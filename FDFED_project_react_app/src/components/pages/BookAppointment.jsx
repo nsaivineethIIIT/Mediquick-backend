@@ -12,7 +12,7 @@ import {
 } from '../../store/slices/appointmentSlice';
 
 const FALLBACK_DOCTOR_IMAGE = 'https://icons.veryicon.com/png/o/healthcate-medical/orange-particle/doctor-20.png';
-const DEFAULT_MAX_FEE = 500;
+const DEFAULT_MAX_FEE = 10000;
 
 const parseFee = (value) => {
   const numeric = Number.parseFloat(value);
@@ -54,7 +54,7 @@ const BookAppointment = () => {
   const [solrDoctors, setSolrDoctors] = useState([]);
   const [solrLoading, setSolrLoading] = useState(false);
   const [availableTodayOnly, setAvailableTodayOnly] = useState(false);
-  const [next48HoursOnly, setNext48HoursOnly] = useState(true);
+  const [next48HoursOnly, setNext48HoursOnly] = useState(false);
   const [maxFee, setMaxFee] = useState(DEFAULT_MAX_FEE);
 
   useEffect(() => {
@@ -161,13 +161,14 @@ const BookAppointment = () => {
   }, [offlineDoctors, solrDoctors, filters, availableTodayOnly, next48HoursOnly, maxFee]);
 
   useEffect(() => {
-    setMaxFee((prev) => Math.min(Math.max(prev, 0), Math.max(highestFee, DEFAULT_MAX_FEE)));
+    // When doctors load, expand maxFee to show all doctors by default
+    setMaxFee(Math.max(highestFee, DEFAULT_MAX_FEE));
   }, [highestFee]);
 
   const handleClearFilters = () => {
     dispatch(clearFilters());
     setAvailableTodayOnly(false);
-    setNext48HoursOnly(true);
+    setNext48HoursOnly(false);
     setMaxFee(Math.max(highestFee, DEFAULT_MAX_FEE));
   };
 
