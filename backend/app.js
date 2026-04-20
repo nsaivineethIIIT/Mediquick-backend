@@ -1,4 +1,3 @@
-
 require('dotenv').config();   // loads .env variables (SMTP_USER, SMTP_PASS, etc.)
 
 const express = require('express');
@@ -6,11 +5,15 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rfs = require('rotating-file-stream');
 const fs = require('fs');
 const app = express();
+
+// Trust first proxy (Render uses a reverse proxy) — required for secure cookies over HTTPS
+app.set('trust proxy', 1);
 
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('./middlewares/auth');
@@ -179,7 +182,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // CORS must be before static file serving
 app.use(cors({
-    origin: ['http://localhost', 'http://localhost:80', 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://127.0.0.1:5173','https://mediquick-frontend-tawny.vercel.app', 'https://mediquick-backend-j9hu.onrender.com'], 
+    origin: ['http://localhost', 'http://localhost:80', 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://127.0.0.1:5173','https://mediquick-frontend-tawny.vercel.app'], 
     credentials: true, 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
@@ -263,14 +266,21 @@ const uploadBlog = multer({
 });
 
 
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+
 app.use(session({
-    secret: 'your-secret-key', 
+    secret: process.env.SESSION_SECRET || 'your-secret-key', 
     resave: false,
-    saveUninitialized: false, 
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        ttl: 24 * 60 * 60, // 1 day
+        autoRemove: 'native'
+    }),
     cookie: {
-        secure: false, 
+        secure: isProduction,          // true on HTTPS (Render), false locally
         httpOnly: true,
-        sameSite: 'lax', 
+        sameSite: isProduction ? 'none' : 'lax',  // 'none' allows cross-origin cookies
         maxAge: 24 * 60 * 60 * 1000 
     }
 }));
