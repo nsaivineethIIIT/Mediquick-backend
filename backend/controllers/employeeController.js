@@ -14,6 +14,7 @@ const { getCloudinaryUrl } = require('../middlewares/upload');
 
 const {checkEmailExists, checkMobileExists} = require('../utils/utils');
 const asyncHandler = require('../middlewares/asyncHandler');
+const { deleteCache } = require('../utils/redisClient');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -1003,6 +1004,8 @@ exports.postApproveDoctor = asyncHandler(async (req, res) => {
       });
     }
 
+    await deleteCache('doctors:online:list');
+    await deleteCache('doctors:offline:list');
     console.log('Doctor approved successfully:', updatedDoctor.name);
     
     // Return JSON response for React
@@ -1066,6 +1069,8 @@ exports.postRejectDoctor = asyncHandler(async (req, res) => {
             });
         }
 
+        await deleteCache('doctors:online:list');
+        await deleteCache('doctors:offline:list');
         console.log('Doctor rejected successfully:', rejectedDoctor.name);
         
         res.status(200).json({
@@ -1471,6 +1476,8 @@ exports.postDisapproveDoctor = asyncHandler(async (req, res) => {
             });
         }
 
+        await deleteCache('doctors:online:list');
+        await deleteCache('doctors:offline:list');
         console.log('Doctor disapproved successfully:', updatedDoctor.name);
         
         res.status(200).json({
@@ -1585,6 +1592,8 @@ exports.postUnrejectDoctor = asyncHandler(async (req, res) => {
             });
         }
 
+        await deleteCache('doctors:online:list');
+        await deleteCache('doctors:offline:list');
         console.log('Doctor un-rejected successfully:', updatedDoctor.name);
         
         res.status(200).json({
