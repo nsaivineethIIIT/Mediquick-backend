@@ -11,7 +11,7 @@ const Prescription = require('../models/Prescription');
 // const Review = require('../models/Review');
 // const Slot = require('../models/Slot');
 const Order = require('../models/Order');
-const {checkEmailExists, checkMobileExists} = require('../utils/utils');
+const { checkEmailExists, checkMobileExists } = require('../utils/utils');
 const { generateToken } = require('../middlewares/auth');
 const asyncHandler = require('../middlewares/asyncHandler');
 const { getCache, setCache, deleteCache } = require('../utils/redisClient');
@@ -427,7 +427,7 @@ exports.login = asyncHandler(async (req, res) => {
 
         // Handle both bcrypt-hashed and plaintext passwords (lazy migration)
         let passwordMatch = false;
-        
+
         if (patient.password && patient.password.startsWith('$2')) {
             // Password is bcrypt-hashed — use bcrypt.compare
             passwordMatch = await bcrypt.compare(password, patient.password);
@@ -452,7 +452,7 @@ exports.login = asyncHandler(async (req, res) => {
 
         // Generate JWT token
         const token = generateToken(patient._id.toString(), 'patient');
-        
+
         return res.status(200).json({
             message: 'Login successful',
             token: token,
@@ -534,9 +534,9 @@ exports.getProfileData = asyncHandler(async (req, res) => {
         }
 
         if (!mongoose.Types.ObjectId.isValid(req.patientId)) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                error: 'Invalid session data' 
+                error: 'Invalid session data'
             });
         }
 
@@ -572,10 +572,10 @@ exports.getProfileData = asyncHandler(async (req, res) => {
                 gender: patient.gender
             }
         };
-        
+
         // Cache result for 30 minutes (1800 seconds)
         await setCache(cacheKey, profileData, 1800);
-        
+
         res.status(200).json(profileData);
     } catch (err) {
         console.error("Error fetching patient profile data:", err.message);
@@ -635,9 +635,9 @@ exports.getPreviousAppointments = asyncHandler(async (req, res) => {
                 }
             ]
         })
-        .populate('doctorId', 'name specialization')
-        .sort({ date: -1, time: -1 })
-        .lean();
+            .populate('doctorId', 'name specialization')
+            .sort({ date: -1, time: -1 })
+            .lean();
 
         // Format appointments
         const formattedAppointments = previousAppointments.map(appt => {
@@ -707,9 +707,9 @@ exports.getUpcomingAppointments = asyncHandler(async (req, res) => {
             ],
             status: { $nin: ['completed', 'cancelled'] }
         })
-        .populate('doctorId', 'name specialization')
-        .sort({ date: 1, time: 1 })
-        .lean();
+            .populate('doctorId', 'name specialization')
+            .sort({ date: 1, time: 1 })
+            .lean();
 
         // Format appointments
         const formattedAppointments = upcomingAppointments.map(appt => {
@@ -920,7 +920,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
             return res.status(400).json({ error: 'Invalid session data' });
         }
 
-    const { name, email, mobile, address, dateOfBirth, gender, removeProfilePhoto } = req.body;
+        const { name, email, mobile, address, dateOfBirth, gender, removeProfilePhoto } = req.body;
 
         if (!name || !email || !mobile || !address) {
             return res.status(400).json({
@@ -928,7 +928,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
                 message: 'All fields are required'
             });
         }
-        
+
         // Validate optional fields
         if (gender && !['male', 'female', 'other'].includes(gender.toLowerCase())) {
             return res.status(400).json({
@@ -977,7 +977,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
         const patientBefore = await Patient.findById(req.patientId).lean();
         const updateData = { name, email, mobile, address };
-        
+
         // Add optional fields if provided
         if (dateOfBirth) {
             updateData.dateOfBirth = dateOfBirth;
@@ -1110,7 +1110,7 @@ exports.getDashboard = asyncHandler(async (req, res) => {
             });
         }
 
-    const patient = await Patient.findById(req.patientId).select('email password avatar name').lean();
+        const patient = await Patient.findById(req.patientId).select('email password avatar name').lean();
 
         if (!patient) {
             return res.status(404).render('error', {
@@ -1121,7 +1121,7 @@ exports.getDashboard = asyncHandler(async (req, res) => {
 
         console.log(`Login Details for Patient - Email: ${patient.email}, Password: ${patient.password}`);
 
-    res.render('patient_dashboard', { patient });
+        res.render('patient_dashboard', { patient });
     } catch (err) {
         console.error("Error accessing patient dashboard:", err.message);
         res.status(500).render('error', {
@@ -1401,7 +1401,17 @@ exports.getDoctorAPI = asyncHandler(async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const doctor = await Doctor.findById(req.params.id);
+        const doctorId = req.params.id;
+        
+        // CHECK CACHE FIRST
+        const cacheKey = `doctor:api:${doctorId}`;
+        const cachedDoctor = await getCache(cacheKey);
+        if (cachedDoctor) {
+            console.log(`Cache hit for doctor ${doctorId}`);
+            return res.json(cachedDoctor);
+        }
+
+        const doctor = await Doctor.findById(doctorId);
         if (!doctor) {
             return res.status(404).json({ error: 'Doctor not found' });
         }
@@ -1448,6 +1458,9 @@ exports.getDoctorAPI = asyncHandler(async (req, res) => {
             profilePhoto: doctor.profilePhoto || '/images/default-doctor.svg',
             consultationFee: doctor.consultationFee || 1000
         };
+
+        // CACHE FOR 1 HOUR (3600 seconds) - will be invalidated when feedback is submitted
+        await setCache(cacheKey, doctorData, 3600);
 
         res.json(doctorData);
     } catch (err) {
@@ -1715,7 +1728,7 @@ exports.getDoctorsAll = asyncHandler(async (req, res) => {
         });
     }
 });
-exports.getPreviousAppointments =  asyncHandler(async (req, res) => {
+exports.getPreviousAppointments = asyncHandler(async (req, res) => {
     try {
         if (!req.patientId) {
             return res.status(401).json({ error: 'Unauthorized' });
@@ -1754,9 +1767,9 @@ exports.getPreviousAppointments =  asyncHandler(async (req, res) => {
                 { status: { $in: ['completed', 'cancelled'] } }
             ]
         })
-        .populate('doctorId', 'name specialization')
-        .sort({ date: -1, time: -1 })
-        .lean();
+            .populate('doctorId', 'name specialization')
+            .sort({ date: -1, time: -1 })
+            .lean();
 
         // Format appointments
         const formattedAppointments = previousAppointments.map(appt => {
@@ -1829,9 +1842,9 @@ exports.getUpcomingAppointments = asyncHandler(async (req, res) => {
             // REMOVED the status filter to include all appointment types
             // status: { $nin: ['completed', 'cancelled'] }
         })
-        .populate('doctorId', 'name specialization')
-        .sort({ date: 1, time: 1 })
-        .lean();
+            .populate('doctorId', 'name specialization')
+            .sort({ date: 1, time: 1 })
+            .lean();
 
         // Format appointments
         const formattedAppointments = upcomingAppointments.map(appt => {
@@ -1873,20 +1886,20 @@ exports.getPrescriptions = asyncHandler(async (req, res) => {
         }
 
         // Fetch prescriptions for the patient using your schema
-        const prescriptions = await Prescription.find({ 
-            patientId: req.patientId 
+        const prescriptions = await Prescription.find({
+            patientId: req.patientId
         })
-        .populate('doctorId', 'name specialization registrationNumber')
-        .populate('patientId', 'name email mobile') // Populate patient data if needed
-        .sort({ createdAt: -1 })
-        .lean();
+            .populate('doctorId', 'name specialization registrationNumber')
+            .populate('patientId', 'name email mobile') // Populate patient data if needed
+            .sort({ createdAt: -1 })
+            .lean();
 
         console.log('Fetched prescriptions:', prescriptions); // Debug log
 
         // Transform the data to work with your schema
         const transformedPrescriptions = prescriptions.map(prescription => {
             console.log('Processing prescription:', prescription); // Debug log
-            
+
             return {
                 _id: prescription._id,
                 patientName: prescription.patientName,
@@ -1986,7 +1999,7 @@ exports.downloadPrescription = asyncHandler(async (req, res) => {
         }
 
         const prescriptionId = req.params.id;
-        
+
         const prescription = await Prescription.findById(prescriptionId)
             .populate('doctorId', 'name specialization registrationNumber')
             .lean();
@@ -2002,14 +2015,14 @@ exports.downloadPrescription = asyncHandler(async (req, res) => {
 
         // Generate PDF content
         const pdfContent = generatePrescriptionPDF(prescription);
-        
+
         // Set headers for PDF download
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="prescription-${prescriptionId}.pdf"`);
-        
+
         // Send PDF
         pdfContent.pipe(res);
-        
+
     } catch (err) {
         console.error("Error downloading prescription:", err.message);
         res.status(500).json({
@@ -2021,180 +2034,180 @@ exports.downloadPrescription = asyncHandler(async (req, res) => {
 const generatePrescriptionPDF = (prescription) => {
     const PDFDocument = require('pdfkit');
     const doc = new PDFDocument({ margin: 50 });
-    
+
     // Set up colors and fonts
-     const primaryColor = '#444d53';
-    const secondaryColor ='#0188df';
+    const primaryColor = '#444d53';
+    const secondaryColor = '#0188df';
     const accentColor = '#0188df';
-    
+
     // Header with styling
     doc.fillColor(accentColor)
-       .fontSize(24)
-       .font('Helvetica-Bold')
-       .text('MEDIQUICK PRESCRIPTION', { align: 'center' });
-    
+        .fontSize(24)
+        .font('Helvetica-Bold')
+        .text('MEDIQUICK PRESCRIPTION', { align: 'center' });
+
     // Add decorative line
     doc.moveTo(50, 90)
-       .lineTo(550, 90)
-       .strokeColor(accentColor)
-       .lineWidth(2)
-       .stroke();
-    
+        .lineTo(550, 90)
+        .strokeColor(accentColor)
+        .lineWidth(2)
+        .stroke();
+
     doc.moveDown(1.5);
-    
+
     // Doctor info with styling
     doc.fillColor(primaryColor)
-       .fontSize(14)
-       .font('Helvetica-Bold')
-       .text('DOCTOR INFORMATION:');
-    
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('DOCTOR INFORMATION:');
+
     doc.fillColor(secondaryColor)
-       .fontSize(12)
-       .font('Helvetica-Bold')
-       .text(`Dr. ${prescription.doctorId.name}`, { indent: 20 });
-    
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text(`Dr. ${prescription.doctorId.name}`, { indent: 20 });
+
     doc.fillColor(primaryColor)
-       .fontSize(11)
-       .font('Helvetica')
-       .text(`Specialization: ${prescription.doctorId.specialization}`, { indent: 20 });
-    
+        .fontSize(11)
+        .font('Helvetica')
+        .text(`Specialization: ${prescription.doctorId.specialization}`, { indent: 20 });
+
     if (prescription.doctorId.registrationNumber) {
         doc.text(`Registration: ${prescription.doctorId.registrationNumber}`, { indent: 20 });
     }
-    
+
     doc.moveDown();
-    
+
     // Patient info with styling
     doc.fillColor(primaryColor)
-       .fontSize(14)
-       .font('Helvetica-Bold')
-       .text('PATIENT INFORMATION:');
-    
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('PATIENT INFORMATION:');
+
     doc.fillColor(primaryColor)
-       .fontSize(11)
-       .font('Helvetica')
-       .text(`Patient: ${prescription.patientName}`, { indent: 20 });
-    
+        .fontSize(11)
+        .font('Helvetica')
+        .text(`Patient: ${prescription.patientName}`, { indent: 20 });
+
     doc.text(`Age: ${prescription.age}`, { indent: 20 });
     doc.text(`Gender: ${prescription.gender}`, { indent: 20 });
-    
+
     if (prescription.weight) {
         doc.text(`Weight: ${prescription.weight} kg`, { indent: 20 });
     }
-    
+
     doc.text(`Date: ${new Date(prescription.appointmentDate).toLocaleDateString()}`, { indent: 20 });
     doc.text(`Time: ${prescription.appointmentTime}`, { indent: 20 });
-    
+
     doc.moveDown();
-    
+
     // Symptoms with styling
     if (prescription.symptoms) {
         doc.fillColor(accentColor)
-           .fontSize(14)
-           .font('Helvetica-Bold')
-           .text('SYMPTOMS & DIAGNOSIS:');
-        
+            .fontSize(14)
+            .font('Helvetica-Bold')
+            .text('SYMPTOMS & DIAGNOSIS:');
+
         doc.fillColor(primaryColor)
-           .fontSize(11)
-           .font('Helvetica')
-           .text(prescription.symptoms, { 
-               indent: 20,
-               align: 'left'
-           });
-        
+            .fontSize(11)
+            .font('Helvetica')
+            .text(prescription.symptoms, {
+                indent: 20,
+                align: 'left'
+            });
+
         doc.moveDown();
     }
-    
+
     // Medicines with styling
     doc.fillColor(accentColor)
-       .fontSize(14)
-       .font('Helvetica-Bold')
-       .text('PRESCRIBED MEDICINES:');
-    
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('PRESCRIBED MEDICINES:');
+
     doc.moveDown(0.5);
-    
+
     prescription.medicines.forEach((medicine, index) => {
         // Medicine name with background
         doc.fillColor('#e8f6f3')
-           .rect(50, doc.y, 500, 20)
-           .fill();
-        
+            .rect(50, doc.y, 500, 20)
+            .fill();
+
         doc.fillColor(accentColor)
-           .fontSize(12)
-           .font('Helvetica-Bold')
-           .text(`${index + 1}. ${medicine.medicineName.toUpperCase()}`, 55, doc.y + 4);
-        
+            .fontSize(12)
+            .font('Helvetica-Bold')
+            .text(`${index + 1}. ${medicine.medicineName.toUpperCase()}`, 55, doc.y + 4);
+
         doc.moveDown(1.5);
-        
+
         // Medicine details with styling
         doc.fillColor(primaryColor)
-           .fontSize(10)
-           .font('Helvetica')
-           .text(`   Dosage: ${medicine.dosage}`, { indent: 20 });
-        
+            .fontSize(10)
+            .font('Helvetica')
+            .text(`   Dosage: ${medicine.dosage}`, { indent: 20 });
+
         doc.text(`   Frequency: ${medicine.frequency}`, { indent: 20 });
         doc.text(`   Duration: ${medicine.duration}`, { indent: 20 });
-        
+
         if (medicine.instructions) {
             doc.text(`   Instructions: ${medicine.instructions}`, { indent: 20 });
         }
-        
+
         doc.moveDown();
     });
-    
+
     // Additional Notes with styling
     if (prescription.additionalNotes) {
         doc.fillColor(accentColor)
-           .fontSize(14)
-           .font('Helvetica-Bold')
-           .text('ADDITIONAL NOTES:');
-        
+            .fontSize(14)
+            .font('Helvetica-Bold')
+            .text('ADDITIONAL NOTES:');
+
         doc.fillColor(primaryColor)
-           .fontSize(11)
-           .font('Helvetica')
-           .text(prescription.additionalNotes, {
-               indent: 20,
-               align: 'left'
-           });
-        
+            .fontSize(11)
+            .font('Helvetica')
+            .text(prescription.additionalNotes, {
+                indent: 20,
+                align: 'left'
+            });
+
         doc.moveDown();
     }
-    
+
     // Important medical information with styling
     doc.fillColor('#e74c3c')
-       .fontSize(12)
-       .font('Helvetica-Bold')
-       .text('IMPORTANT MEDICAL INFORMATION:');
-    
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text('IMPORTANT MEDICAL INFORMATION:');
+
     doc.fillColor(primaryColor)
-       .fontSize(10)
-       .font('Helvetica')
-       .text('• Take medicines as prescribed by the doctor', { indent: 20 });
-    
+        .fontSize(10)
+        .font('Helvetica')
+        .text('• Take medicines as prescribed by the doctor', { indent: 20 });
+
     doc.text('• Do not stop medication without consulting your doctor', { indent: 20 });
     doc.text('• Complete the full course of treatment', { indent: 20 });
     doc.text('• Contact your doctor in case of any adverse reactions', { indent: 20 });
-    
+
     doc.moveDown(2);
-    
+
     // Footer with styling
     doc.fillColor('#7f8c8d')
-       .fontSize(9)
-       .font('Helvetica')
-       .text('This is a computer-generated prescription. For any concerns, please consult your doctor.', { 
-           align: 'center'
+        .fontSize(9)
+        .font('Helvetica')
+        .text('This is a computer-generated prescription. For any concerns, please consult your doctor.', {
+            align: 'center'
         });
-    
+
     doc.text(`Prescription ID: ${prescription._id}`, { align: 'center' });
     doc.text(`Patient Email: ${prescription.patientEmail}`, { align: 'center' });
-    
+
     // Add final decorative line
     doc.moveTo(50, doc.y + 10)
-       .lineTo(550, doc.y + 10)
-       .strokeColor('#bdc3c7')
-       .lineWidth(1)
-       .stroke();
-    
+        .lineTo(550, doc.y + 10)
+        .strokeColor('#bdc3c7')
+        .lineWidth(1)
+        .stroke();
+
     doc.end();
     return doc;
 };
@@ -2202,11 +2215,11 @@ const generatePrescriptionPDF = (prescription) => {
 // const generatePrescriptionPDF = (prescription) => {
 //     const PDFDocument = require('pdfkit');
 //     const doc = new PDFDocument();
-    
+
 //     // Add content to PDF
 //     doc.fontSize(20).text('MEDIQUICK PRESCRIPTION', { align: 'center' });
 //     doc.moveDown();
-    
+
 //     // Doctor info
 //     doc.fontSize(12);
 //     doc.text(`Doctor: Dr. ${prescription.doctorId.name}`);
@@ -2215,7 +2228,7 @@ const generatePrescriptionPDF = (prescription) => {
 //         doc.text(`Registration: ${prescription.doctorId.registrationNumber}`);
 //     }
 //     doc.moveDown();
-    
+
 //     // Patient info from your schema
 //     doc.text(`Patient: ${prescription.patientName}`);
 //     doc.text(`Age: ${prescription.age}`);
@@ -2226,18 +2239,18 @@ const generatePrescriptionPDF = (prescription) => {
 //     doc.text(`Date: ${new Date(prescription.appointmentDate).toLocaleDateString()}`);
 //     doc.text(`Time: ${prescription.appointmentTime}`);
 //     doc.moveDown();
-    
+
 //     // Symptoms (used as diagnosis)
 //     if (prescription.symptoms) {
 //         doc.fontSize(14).text('SYMPTOMS/DIAGNOSIS:', { underline: true });
 //         doc.fontSize(12).text(prescription.symptoms);
 //         doc.moveDown();
 //     }
-    
+
 //     // Medicines from your schema
 //     doc.fontSize(14).text('PRESCRIBED MEDICINES:', { underline: true });
 //     doc.moveDown();
-    
+
 //     prescription.medicines.forEach((medicine, index) => {
 //         doc.text(`${index + 1}. ${medicine.medicineName.toUpperCase()}`, { continued: false });
 //         doc.text(`   Dosage: ${medicine.dosage}`, { indent: 20 });
@@ -2248,14 +2261,14 @@ const generatePrescriptionPDF = (prescription) => {
 //         }
 //         doc.moveDown();
 //     });
-    
+
 //     // Additional Notes
 //     if (prescription.additionalNotes) {
 //         doc.fontSize(14).text('ADDITIONAL NOTES:', { underline: true });
 //         doc.fontSize(12).text(prescription.additionalNotes);
 //         doc.moveDown();
 //     }
-    
+
 //     // Important medical information
 //     doc.moveDown();
 //     doc.fontSize(10).text('IMPORTANT:', { underline: true });
@@ -2263,13 +2276,13 @@ const generatePrescriptionPDF = (prescription) => {
 //     doc.text('• Do not stop medication without consulting your doctor');
 //     doc.text('• Complete the full course of treatment');
 //     doc.text('• Contact your doctor in case of any adverse reactions');
-    
+
 //     // Footer
 //     doc.moveDown(2);
 //     doc.fontSize(10).text('This is a computer-generated prescription. For any concerns, please consult your doctor.', { align: 'center' });
 //     doc.text(`Prescription ID: ${prescription._id}`, { align: 'center' });
 //     doc.text(`Patient Email: ${prescription.patientEmail}`, { align: 'center' });
-    
+
 //     doc.end();
 //     return doc;
 // };
@@ -2284,19 +2297,19 @@ exports.getOrderDetails = asyncHandler(async (req, res) => {
         const order = await Order.findById(orderId)
             .populate('medicineId', 'name medicineID cost')
             .lean();
-        
+
         if (!order) {
-            return res.status(404).render('error', { 
+            return res.status(404).render('error', {
                 message: 'Order not found',
-                error: { status: 404 } 
+                error: { status: 404 }
             });
         }
 
         // Check if the order belongs to the logged-in patient
         if (order.patientId.toString() !== req.patientId) {
-            return res.status(403).render('error', { 
+            return res.status(403).render('error', {
                 message: 'Access denied',
-                error: { status: 403 } 
+                error: { status: 403 }
             });
         }
 

@@ -533,6 +533,11 @@ exports.submitFeedback = asyncHandler(async (req, res, next) => {
 
         await appointment.save();
 
+        // CRITICAL: Invalidate doctor's profile cache so ratings update immediately
+        const cacheKey = `doctor:api:${appointment.doctorId}`;
+        await deleteCache(cacheKey);
+        console.log(`Cache invalidated for doctor ${appointment.doctorId} after feedback submission`);
+
         console.log('Feedback submitted for appointment:', appointmentId);
         res.json({
             message: 'Feedback submitted successfully',
