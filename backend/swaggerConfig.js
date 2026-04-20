@@ -21,6 +21,10 @@ const options = {
         url: 'http://127.0.0.1:3002',
         description: 'Development server (127.0.0.1)',
       },
+      {
+        url: 'https://mediquick-backend-j9hu.onrender.com',
+        description: 'Production server',
+      },
     ],
     components: {
       securitySchemes: {
