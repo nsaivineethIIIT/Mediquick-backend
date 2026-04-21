@@ -1145,6 +1145,10 @@ exports.updateProfile = asyncHandler(async (req, res) => {
         const doctorProfileCacheKey = `doctor:${req.doctorId}:profile`;
         await deleteCache(doctorProfileCacheKey);
         
+        // CRITICAL: Also invalidate the API cache used by patients viewing this doctor's profile
+        const doctorApiCacheKey = `doctor:api:${req.doctorId}`;
+        await deleteCache(doctorApiCacheKey);
+        
         // Invalidate doctor lists (online/offline) as status may have changed
         await deleteCache('doctors:online:list');
         await deleteCache('doctors:offline:list');

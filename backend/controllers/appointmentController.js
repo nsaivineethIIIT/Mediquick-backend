@@ -537,6 +537,12 @@ exports.submitFeedback = asyncHandler(async (req, res, next) => {
         const cacheKey = `doctor:api:${appointment.doctorId}`;
         await deleteCache(cacheKey);
         console.log(`Cache invalidated for doctor ${appointment.doctorId} after feedback submission`);
+        
+        // CRITICAL: Also invalidate the doctors/online and doctors/offline lists
+        // because the average rating is recalculated in these endpoints
+        await deleteCache('doctors:online:list');
+        await deleteCache('doctors:offline:list');
+        console.log(`Invalidated doctors/online and doctors/offline cache lists after feedback submission`);
 
         console.log('Feedback submitted for appointment:', appointmentId);
         res.json({
