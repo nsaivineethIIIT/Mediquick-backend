@@ -160,7 +160,7 @@ const DoctorProfile = () => {
             <p className="doctor-loading-text">No upcoming appointments found.</p>
           ) : (
             <div className="doctor-profile-list">
-              {upcomingAppointments.slice(0, 6).map((appointment) => (
+              {upcomingAppointments.map((appointment) => (
                 <article key={appointment._id}>
                   <h4>{appointment.patientId?.name || 'Unknown Patient'}</h4>
                   <p>{formatDate(appointment.date)} at {appointment.time}</p>
@@ -193,7 +193,7 @@ const DoctorProfile = () => {
             <p className="doctor-loading-text">No previous appointments found.</p>
           ) : (
             <div className="doctor-profile-list">
-              {previousAppointments.slice(0, 6).map((appointment) => (
+              {previousAppointments.map((appointment) => (
                 <article key={appointment._id}>
                   <h4>{appointment.patientId?.name || 'Unknown Patient'}</h4>
                   <p>{formatDate(appointment.date)} at {appointment.time}</p>
