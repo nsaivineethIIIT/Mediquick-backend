@@ -1684,7 +1684,7 @@ exports.postApproveEmployee = asyncHandler(async (req, res) => {
 // Doctor Analytics - Get doctor-wise appointment statistics
 exports.getDoctorAnalytics = asyncHandler(async (req, res) => {
     try {
-        const doctors = await Doctor.find({}).select('name email specialization');
+        const doctors = await Doctor.find({}).select('name email specialization mobile');
         
         const analytics = await Promise.all(doctors.map(async (doctor) => {
             const appointments = await Appointment.find({ 
@@ -1692,11 +1692,26 @@ exports.getDoctorAnalytics = asyncHandler(async (req, res) => {
                 isBlockedSlot: false 
             });
             
+            // Calculate average rating from completed appointments with feedback
+            const completedAppointmentsWithRating = await Appointment.find({
+                doctorId: doctor._id,
+                status: 'completed',
+                feedback: { $ne: null },
+                rating: { $ne: null }
+            }).select('rating');
+            
+            let averageRating = 0;
+            if (completedAppointmentsWithRating.length > 0) {
+                const totalRating = completedAppointmentsWithRating.reduce((sum, app) => sum + app.rating, 0);
+                averageRating = parseFloat((totalRating / completedAppointmentsWithRating.length).toFixed(1));
+            }
+            
             const stats = {
                 _id: doctor._id,
                 name: doctor.name,
                 email: doctor.email,
                 specialization: doctor.specialization,
+                mobile: doctor.mobile,
                 totalAppointments: appointments.length,
                 completed: appointments.filter(a => a.status === 'completed').length,
                 confirmed: appointments.filter(a => a.status === 'confirmed').length,
@@ -1705,7 +1720,9 @@ exports.getDoctorAnalytics = asyncHandler(async (req, res) => {
                 blocked: await Appointment.countDocuments({ 
                     doctorId: doctor._id, 
                     isBlockedSlot: true 
-                })
+                }),
+                averageRating: averageRating,
+                totalRatings: completedAppointmentsWithRating.length
             };
             
             return stats;

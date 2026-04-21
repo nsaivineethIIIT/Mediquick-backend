@@ -237,6 +237,7 @@ const DoctorAnalytics = () => {
                     <th>COMPLETED</th>
                     <th>PENDING/CONFIRMED</th>
                     <th>CANCELLED</th>
+                    <th>AVG RATING</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -257,6 +258,15 @@ const DoctorAnalytics = () => {
                         {doctor.pending + doctor.confirmed}
                       </td>
                       <td className="count-cancelled">{doctor.cancelled}</td>
+                      <td className="count-rating">
+                        {doctor.averageRating > 0 ? (
+                          <span className="rating-badge">
+                            ⭐ {doctor.averageRating}/10 ({doctor.totalRatings})
+                          </span>
+                        ) : (
+                          <span className="no-rating">No ratings</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
