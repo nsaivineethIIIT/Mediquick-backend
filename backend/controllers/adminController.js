@@ -514,15 +514,6 @@ exports.getSignins = asyncHandler(async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized: Please log in as admin' });
         }
 
-        // Try cache first
-        const cacheKey = 'admin:signins:data';
-        const cachedSignins = await getCache(cacheKey);
-        if (cachedSignins) {
-            console.log('✅ Admin signins from Redis');
-            return res.json(cachedSignins);
-        }
-
-        console.log('❌ Admin signins from DB');
         const patients = await Patient.find().select('name email lastLogin').lean();
         const doctors = await Doctor.find().select('name email lastLogin').lean();
         const suppliers = await Supplier.find().select('name email lastLogin').lean();

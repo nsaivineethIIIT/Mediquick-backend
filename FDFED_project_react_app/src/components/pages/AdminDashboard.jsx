@@ -433,7 +433,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // User Management Functions
   const filterUsers = () => {
     let filtered = allUsers;
 
@@ -444,18 +443,8 @@ const AdminDashboard = () => {
     if (filterValue) {
       filtered = filtered.filter(user => {
         const searchValue = filterValue.toLowerCase();
-        switch (user.type.toLowerCase()) {
-          case 'patient':
-          case 'employee':
-          case 'admin':
-            return user.email?.toLowerCase().includes(searchValue);
-          case 'doctor':
-            return user.registrationNumber?.toLowerCase().includes(searchValue);
-          case 'supplier':
-            return user.supplierID?.toLowerCase().includes(searchValue);
-          default:
-            return true;
-        }
+        // Filter all user types by email for consistency
+        return user.email?.toLowerCase().includes(searchValue);
       });
     }
 
@@ -504,11 +493,10 @@ const AdminDashboard = () => {
     switch (userTypeFilter) {
       case 'patient':
       case 'employee':
-        return 'Filter by email...';
       case 'doctor':
-        return 'Filter by registration number...';
       case 'supplier':
-        return 'Filter by supplier ID...';
+      case 'admin':
+        return 'Filter by email...';
       default:
         return 'Enter filter value...';
     }
@@ -519,11 +507,9 @@ const AdminDashboard = () => {
       case 'patient':
       case 'employee':
       case 'admin':
-        return user.email;
       case 'doctor':
-        return user.registrationNumber || 'N/A';
       case 'supplier':
-        return user.supplierID || 'N/A';
+        return user.email || 'N/A';
       default:
         return 'N/A';
     }

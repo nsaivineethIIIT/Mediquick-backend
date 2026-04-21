@@ -32,8 +32,7 @@ function Footer() {
             <Link className="mq-footer__link" to="/faqs">FAQ's</Link>
             <Link className="mq-footer__link" to="/contact-us">Contact Us</Link>
             <Link className="mq-footer__link" to="/blog">Blog</Link>
-            <a className="mq-footer__link" href="/privacy">Privacy Policy</a>
-            <a className="mq-footer__link" href="/terms">Terms and Conditions</a>
+            
           </div>
         </div>
       </div>

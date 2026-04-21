@@ -22,6 +22,18 @@ const DoctorAnalytics = () => {
     fetchPatients();
   }, []);
 
+  // Auto-scroll table to the right to show AVG RATING column
+  useEffect(() => {
+    if (!loading && doctors.length > 0) {
+      setTimeout(() => {
+        const tableContainer = document.querySelector('.table-container');
+        if (tableContainer) {
+          tableContainer.scrollLeft = tableContainer.scrollWidth;
+        }
+      }, 100);
+    }
+  }, [loading, doctors]);
+
   useEffect(() => {
     if (selectedDoctorId) {
       fetchDoctorAppointments();
