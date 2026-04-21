@@ -53,8 +53,6 @@ const BookAppointment = () => {
 
   const [solrDoctors, setSolrDoctors] = useState([]);
   const [solrLoading, setSolrLoading] = useState(false);
-  const [availableTodayOnly, setAvailableTodayOnly] = useState(false);
-  const [next48HoursOnly, setNext48HoursOnly] = useState(false);
   const [maxFee, setMaxFee] = useState(DEFAULT_MAX_FEE);
 
   useEffect(() => {
@@ -140,16 +138,7 @@ const BookAppointment = () => {
       );
     }
 
-    if (availableTodayOnly) {
-      result = result.filter((doc) => doc.availability.toLowerCase().includes('today'));
-    }
 
-    if (next48HoursOnly) {
-      result = result.filter((doc) => {
-        const text = doc.availability.toLowerCase();
-        return text.includes('today') || text.includes('tomorrow') || text.includes('48');
-      });
-    }
 
     result = result.filter((doc) => parseFee(doc.consultationFee) <= maxFee);
 
@@ -158,7 +147,7 @@ const BookAppointment = () => {
       specializations: uniqueSpecializations,
       highestFee: Math.max(maxAvailableFee, DEFAULT_MAX_FEE)
     };
-  }, [offlineDoctors, solrDoctors, filters, availableTodayOnly, next48HoursOnly, maxFee]);
+  }, [offlineDoctors, solrDoctors, filters, maxFee]);
 
   useEffect(() => {
     // When doctors load, expand maxFee to show all doctors by default
@@ -167,8 +156,6 @@ const BookAppointment = () => {
 
   const handleClearFilters = () => {
     dispatch(clearFilters());
-    setAvailableTodayOnly(false);
-    setNext48HoursOnly(false);
     setMaxFee(Math.max(highestFee, DEFAULT_MAX_FEE));
   };
 
@@ -288,30 +275,6 @@ const BookAppointment = () => {
               <div className="rounded-2xl bg-surface-container-high/30 p-6">
                 <h3 className="mb-6 font-headline text-xl font-bold">Refine Search</h3>
                 <div className="space-y-6">
-                  <div>
-                    <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Availability</label>
-                    <div className="space-y-3">
-                      <label className="group flex cursor-pointer items-center gap-3">
-                        <input
-                          className="h-5 w-5 rounded border-outline-variant text-primary focus:ring-primary"
-                          type="checkbox"
-                          checked={availableTodayOnly}
-                          onChange={(e) => setAvailableTodayOnly(e.target.checked)}
-                        />
-                        <span className="text-on-surface-variant transition-colors group-hover:text-primary">Available Today</span>
-                      </label>
-                      <label className="group flex cursor-pointer items-center gap-3">
-                        <input
-                          className="h-5 w-5 rounded border-outline-variant text-primary focus:ring-primary"
-                          type="checkbox"
-                          checked={next48HoursOnly}
-                          onChange={(e) => setNext48HoursOnly(e.target.checked)}
-                        />
-                        <span className="text-on-surface-variant transition-colors group-hover:text-primary">Next 48 Hours</span>
-                      </label>
-                    </div>
-                  </div>
-
                   <div className="pt-4">
                     <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Consultation Fee</label>
                     <input
