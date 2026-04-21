@@ -389,7 +389,7 @@ const swaggerSpec = require('./swaggerConfig');
 app.get('/', (req, res) => {
     res.status(200).json({
         status: 'ok',
-        message: 'Nutri-Connect Backend Server is running',
+        message: 'Mediquick Backend Server is running',
         timestamp: new Date().toISOString()
     });
 });
