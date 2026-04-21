@@ -167,6 +167,16 @@ const DoctorProfile = () => {
                   <span className={`doctor-status doctor-status-${(appointment.status || '').toLowerCase()}`}>
                     {formatStatus(appointment.status)}
                   </span>
+                  {appointment.rating && appointment.feedback && (
+                    <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e0e0e0' }}>
+                      <p style={{ fontSize: '0.9rem', marginBottom: '4px' }}>
+                        <strong>Rating:</strong> {appointment.rating}/10
+                      </p>
+                      <p style={{ fontSize: '0.85rem', color: '#666', margin: '0' }}>
+                        <strong>Feedback:</strong> {appointment.feedback}
+                      </p>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
@@ -190,6 +200,16 @@ const DoctorProfile = () => {
                   <span className={`doctor-status doctor-status-${(appointment.status || '').toLowerCase()}`}>
                     {formatStatus(appointment.status)}
                   </span>
+                  {appointment.rating && appointment.feedback && (
+                    <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e0e0e0' }}>
+                      <p style={{ fontSize: '0.9rem', marginBottom: '4px' }}>
+                        <strong>Rating:</strong> {appointment.rating}/10
+                      </p>
+                      <p style={{ fontSize: '0.85rem', color: '#666', margin: '0' }}>
+                        <strong>Feedback:</strong> {appointment.feedback}
+                      </p>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
