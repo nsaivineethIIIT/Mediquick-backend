@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Footer from './Footer';
 import '../../assets/css/home_page.css';
 
 function Home() {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const previousRootFontSize = document.documentElement.style.fontSize;
     document.documentElement.classList.add('light');
@@ -13,6 +16,26 @@ function Home() {
       document.documentElement.classList.remove('light');
       document.documentElement.style.fontSize = previousRootFontSize;
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const apiBase = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${apiBase}/review/approved-reviews`);
+        const data = await response.json();
+        
+        if (data.success && data.reviews) {
+          setReviews(data.reviews);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
   }, []);
 
   return (
@@ -141,51 +164,48 @@ function Home() {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-8 items-stretch">
-              <div className="bg-surface-container-lowest p-8 md:p-10 rounded-[2rem] border border-outline-variant/10 shadow-sm flex flex-col justify-between items-center text-center">
+              {loading ? (
+                <div className="col-span-full bg-surface-container-lowest p-8 md:p-10 rounded-[2rem] border border-outline-variant/10 text-center">
+                  <p className="text-on-surface-variant">Loading reviews...</p>
+                </div>
+              ) : reviews.length > 0 ? (
+                <>
+                  <div className="bg-surface-container-lowest p-8 md:p-10 rounded-[2rem] border border-outline-variant/10 shadow-sm flex flex-col justify-between items-center text-center">
                 <div className="mb-8 text-primary text-5xl leading-none">“</div>
                 <p className="text-lg md:text-xl lg:text-[1.45rem] leading-relaxed text-on-surface font-medium max-w-3xl mx-auto">
-                  MediQuick has made it easier to manage appointments and records without switching between multiple systems.
-                </p>
+                      {reviews[0]?.reviewText}
+                    </p>
                 <div className="mt-10 flex items-center justify-center gap-4">
-                  <img
-                    alt="Testimonial User"
-                    className="w-14 h-14 rounded-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6nxAijnIfl6YeKZMshbObQksVjG2Lzttv5bY2CUz5GMbzacsLhpo-idv3OxctkDql7pqSp4HRZGaJfg-nu21JVwm42GdJdQCY0OnwUoLKpjRcR8Vt36eRATlljjWy2BIan4xC2kUAwRf-hlicIV6xP9AqTkzvwsucAkMt4xFQkVqUleG2B2N4rL3ZUMo0t60IpMDPvDnccv_q0ab4sM1YSiEfHJR9A_Luv7H6-xFsbMWocd1LpAW2sxrXMHjODYcM8avtJE2Z8aSJ"
-                  />
+                  <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-primary text-2xl">account_circle</span>
+                      </div>
                   <div className="text-left">
-                    <cite className="not-italic font-bold text-on-surface text-base md:text-lg">Elena Rodriguez</cite>
-                    <p className="text-sm text-on-surface-variant">Using MediQuick for care management</p>
+                    <cite className="not-italic font-bold text-on-surface text-base md:text-lg">{reviews[0]?.userName}</cite>
+                    <p className="text-sm text-on-surface-variant">{reviews[0]?.userType === 'Patient' ? 'Patient' : 'Healthcare Professional'}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-6">
-                {[
-                  {
-                    name: 'Dr. Sarah Chen',
-                    role: 'Clinic Director',
-                    rating: '5.0',
-                    text: 'The portal keeps follow-ups, records, and schedules organized in one place.'
-                  },
-                  {
-                    name: 'Mark Thompson',
-                    role: 'Patient',
-                    rating: '4.9',
-                    text: 'Booking visits and checking prescriptions feels much faster on mobile.'
-                  }
-                ].map((review) => (
-                  <div key={review.name} className="bg-surface-container-lowest p-7 rounded-[1.75rem] border border-outline-variant/10 shadow-sm text-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-6">
+                {reviews.slice(1, 3).map((review) => (
+                  <div key={review._id} className="bg-surface-container-lowest p-7 rounded-[1.75rem] border border-outline-variant/10 shadow-sm text-center">
                     <div className="flex items-center justify-between gap-4 mb-5">
                       <div>
-                        <h3 className="text-base md:text-lg font-bold text-on-surface">{review.name}</h3>
-                        <p className="text-xs md:text-sm text-on-surface-variant">{review.role}</p>
+                        <h3 className="text-base md:text-lg font-bold text-on-surface">{review.userName}</h3>
+                        <p className="text-xs md:text-sm text-on-surface-variant">{review.userType === 'Patient' ? 'Patient' : 'Healthcare Professional'}</p>
                       </div>
-                      <div className="px-3 py-1 rounded-full bg-primary-fixed text-primary text-xs font-bold">{review.rating}/5</div>
+                      <div className="px-3 py-1 rounded-full bg-primary-fixed text-primary text-xs font-bold">{review.rating.toFixed(1)}/5</div>
                     </div>
-                    <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">{review.text}</p>
+                    <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">{review.reviewText}</p>
                   </div>
                 ))}
               </div>
+                </>
+              ) : (
+                <div className="col-span-full bg-surface-container-lowest p-8 md:p-10 rounded-[2rem] border border-outline-variant/10 text-center">
+                  <p className="text-on-surface-variant">No reviews available yet. Be the first to leave a review!</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
