@@ -11,7 +11,8 @@ const quickActionDefinitions = [
   { label: 'My Cart', to: '/patient/cart', keywords: ['cart', 'checkout'] },
   { label: 'My Orders', to: '/patient/orders', keywords: ['order', 'orders', 'purchase'] },
   { label: 'Blogs', to: '/blog', keywords: ['blog', 'blogs', 'post', 'article'] },
-  { label: 'Profile', to: '/patient/profile', keywords: ['profile', 'account', 'details'] }
+  { label: 'Profile', to: '/patient/profile', keywords: ['profile', 'account', 'details'] },
+  { label: 'Leave a Review', to: '/patient/submit-review', keywords: ['review', 'reviews', 'feedback', 'rating', 'comment'] }
 ];
 
 const dashboardCards = [
@@ -59,6 +60,14 @@ const dashboardCards = [
     footer: 'Schedule new appointment',
     to: '/patient/book-appointment',
     action: 'Schedule New'
+  },
+  {
+    title: 'Leave a Review',
+    description: 'Share your experience and feedback about our services and healthcare providers.',
+    icon: 'rate_review',
+    footer: 'Help others make informed decisions',
+    to: '/patient/submit-review',
+    action: 'Write Review'
   }
 ];
 

@@ -27,7 +27,7 @@ function Home() {
             <Link to="/patient/book-appointment" className="font-manrope font-bold text-sm md:text-base tracking-tight text-slate-500 hover:text-blue-600 transition-colors">Appointments</Link>
           </div>
           <div className="flex items-center gap-6">
-            <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">search</button>
+            {/* <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">search</button> */}
             <Link to="/patient/form" className="px-6 py-2 bg-primary-container text-on-primary-container rounded-xl font-manrope font-bold text-base md:text-lg tracking-tight scale-95 duration-200 active:opacity-80 transition-all hover:brightness-110">Sign In</Link>
           </div>
         </div>
