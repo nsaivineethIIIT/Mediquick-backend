@@ -182,7 +182,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // CORS must be before static file serving
 app.use(cors({
-    origin: ['http://localhost', 'http://localhost:80', 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://127.0.0.1:5173','https://mediquick-frontend-tawny.vercel.app'], 
+    origin: ['http://localhost', 'http://localhost:80', 'http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://127.0.0.1:5173','https://mediquick-frontend-tawny.vercel.app','https://mediquick-backend-j9hu.onrender.com'], 
     credentials: true, 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS','PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
